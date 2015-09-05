@@ -1,6 +1,6 @@
 package web.cano.spider.pipeline;
 
-import web.cano.spider.ResultItems;
+import web.cano.spider.Page;
 import web.cano.spider.Task;
 
 import java.util.ArrayList;
@@ -10,17 +10,17 @@ import java.util.List;
  * @author code4crafter@gmail.com
  * @since 0.4.0
  */
-public class ResultItemsCollectorPipeline implements CollectorPipeline<ResultItems> {
+public class ResultItemsCollectorPipeline implements CollectorPipeline<Page> {
 
-    private List<ResultItems> collector = new ArrayList<ResultItems>();
+    private List<Page> collector = new ArrayList<Page>();
 
     @Override
-    public synchronized void process(ResultItems resultItems, Task task) {
-        collector.add(resultItems);
+    public synchronized void process(Page page, Task task) {
+        collector.add(page);
     }
 
     @Override
-    public List<ResultItems> getCollected() {
+    public List<Page> getCollected() {
         return collector;
     }
 }

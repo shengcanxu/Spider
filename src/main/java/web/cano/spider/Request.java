@@ -65,11 +65,20 @@ public class Request implements Serializable {
      */
     private long priority;
 
-    public Request() {
+    private Request() {
     }
 
     public Request(String url) {
-        this.url = url;
+        this(url,false);
+    }
+
+    public Request(String url,boolean isPost){
+        if(isPost){
+            this.url = url;
+            this.setMethod(HttpConstant.Method.POST);
+        }else{
+            this.url = url;
+        }
     }
 
     public Request(String url, int depth){

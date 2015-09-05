@@ -14,7 +14,6 @@ import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.QueueScheduler;
 import web.cano.spider.scheduler.Scheduler;
 import web.cano.spider.thread.CountableThreadPool;
-import web.cano.spider.utils.HttpConstant;
 import web.cano.spider.utils.UrlUtils;
 
 import java.io.Closeable;
@@ -465,7 +464,7 @@ public class Spider implements Runnable, Task {
         extractAndAddRequests(page, spawnUrl);
         if (!page.getResultItems().isSkip()) {
             for (Pipeline pipeline : pipelines) {
-                pipeline.process(page.getResultItems(), this);
+                pipeline.process(page, this);
             }
         }
         //for proxy status management
@@ -502,14 +501,13 @@ public class Spider implements Runnable, Task {
         }
     }
 
-    private void addRequest(Request request) {
-//        if (site.getDomain() == null && request != null && request.getUrl() != null) {
-//            site.setDomain(UrlUtils.getDomain(request.getUrl()));
-//        }
+    public Spider addRequest(Request request) {
         scheduler.push(request, this);
+        signalNewUrl();
+        return this;
     }
 
-    private void addRequests(List<Request> requests){
+    public Spider addRequests(List<Request> requests){
         if(site.isDeepFirst()){
             for(int i=requests.size()-1; i>=0; i--){
                 scheduler.push(requests.get(i),this);
@@ -519,6 +517,8 @@ public class Spider implements Runnable, Task {
                 scheduler.push(requests.get(i),this);
             }
         }
+        signalNewUrl();
+        return this;
     }
 
     protected void checkIfRunning() {
@@ -531,59 +531,6 @@ public class Spider implements Runnable, Task {
         Thread thread = new Thread(this);
         thread.setDaemon(false);
         thread.start();
-    }
-
-    /**
-     * Add urls to crawl. <br/>
-     *
-     * @param urls
-     * @return
-     */
-    public Spider addUrl(String... urls) {
-        List<Request> requests = new ArrayList<Request>();
-        for (String url : urls) {
-            requests.add(new Request(url));
-        }
-        addRequests(requests);
-        signalNewUrl();
-        return this;
-    }
-
-    public Spider addUrls(List<String> urls){
-        List<Request> requests = new ArrayList<Request>();
-        for (String url : urls) {
-            requests.add(new Request(url));
-        }
-        addRequests(requests);
-        signalNewUrl();
-        return this;
-    }
-
-    /**
-     * add urls to crawl. these urls will be parsed evern they are already parsed before
-     * @param urls
-     * @return
-     */
-    public Spider addUrlForRefresh(String... urls){
-        List<Request> requests = new ArrayList<Request>();
-        for (String url : urls){
-            requests.add(new Request(url).setRefresh(true));
-        }
-        addRequests(requests);
-        signalNewUrl();
-        return this;
-    }
-
-    public Spider addUrlPost(String... urls){
-        List<Request> requests = new ArrayList<Request>();
-        for (String url : urls){
-            Request request = new Request(url);
-            request.setMethod(HttpConstant.Method.POST);
-            requests.add(request);
-        }
-        addRequests(requests);
-        signalNewUrl();
-        return this;
     }
 
     /**
@@ -620,20 +567,6 @@ public class Spider implements Runnable, Task {
             return null;
         }
     }
-
-    /**
-     * Add urls with information to crawl.<br/>
-     *
-     * @param requests
-     * @return
-     */
-//    public Spider addRequest(Request... requests) {
-//        for (Request request : requests) {
-//            addRequest(request);
-//        }
-//        signalNewUrl();
-//        return this;
-//    }
 
     private void waitNewUrl() {
         newUrlLock.lock();

@@ -4,6 +4,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.http.annotation.ThreadSafe;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import web.cano.spider.Page;
 import web.cano.spider.ResultItems;
 import web.cano.spider.Task;
 import web.cano.spider.utils.FilePersistentBase;
@@ -37,7 +38,8 @@ public class FilePipeline extends FilePersistentBase implements Pipeline {
     }
 
     @Override
-    public void process(ResultItems resultItems, Task task) {
+    public void process(Page page, Task task) {
+        ResultItems resultItems = page.getResultItems();
         if(resultItems.isSkip()) return;
 
         String path = this.path + PATH_SEPERATOR + task.getUUID() + PATH_SEPERATOR;

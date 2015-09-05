@@ -1,6 +1,7 @@
 package web.cano.spiderproject.woshipm.samples;
 
 import web.cano.spider.Page;
+import web.cano.spider.Request;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.processor.PageProcessor;
@@ -42,7 +43,8 @@ public class SinaBlogProcessor implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        Spider.create(new SinaBlogProcessor()).addUrl("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html")
+        Spider.create(new SinaBlogProcessor())
+                .addRequest(new Request("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
                 .run();
     }
 }

@@ -22,10 +22,10 @@ public class SpiderTest {
     public void testStartAndStop() throws InterruptedException {
         Spider spider = Spider.create(new SimplePageProcessor("http://www.oschina.net/", "http://www.oschina.net/*")).addPipeline(new Pipeline() {
             @Override
-            public void process(ResultItems resultItems, Task task) {
+            public void process(Page page, Task task) {
                 System.out.println(1);
             }
-        }).addUrl("http://www.oschina.net/").thread(1);
+        }).addRequest(new Request("http://www.oschina.net/")).thread(1);
         spider.start();
         Thread.sleep(1000);
         spider.stop();

@@ -1,6 +1,6 @@
 package web.cano.spider.pipeline;
 
-import web.cano.spider.ResultItems;
+import web.cano.spider.Page;
 import web.cano.spider.Task;
 
 /**
@@ -17,8 +17,8 @@ public interface Pipeline {
     /**
      * Process extracted results.
      *
-     * @param resultItems
+     * @param page
      * @param task
      */
-    public void process(ResultItems resultItems, Task task);
+    public void process(Page page, Task task);
 }
