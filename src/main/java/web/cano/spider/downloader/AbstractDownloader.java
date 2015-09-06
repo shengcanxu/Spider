@@ -30,7 +30,7 @@ public abstract class AbstractDownloader implements Downloader {
      * @return html
      */
     public Html download(String url, String charset) {
-        Page page = download(new Request(url), Site.me().setCharset(charset).toTask());
+        Page page = download(new Request(new Page(url)), Site.me().setCharset(charset).toTask());
         return (Html) page.getHtml();
     }
 
@@ -41,18 +41,20 @@ public abstract class AbstractDownloader implements Downloader {
     }
 
     protected Page addToCycleRetry(Request request, Site site) {
-        Page page = new Page();
-        int cycleTriedTimes = request.getCycleTriedTimes();
-        if (cycleTriedTimes == 0) {
-            page.addTargetRequest(request.setPriority(0).setCycleTriedTimes(1));
-        } else {
-            cycleTriedTimes++;
-            if (cycleTriedTimes >= site.getCycleRetryTimes()) {
-                return null;
-            }
-            page.addTargetRequest(request.setPriority(0).setCycleTriedTimes(cycleTriedTimes));
-        }
-        page.setNeedCycleRetry(true);
-        return page;
+        //TODO: 需要将priority和cycleretrytimes设置到page里面去
+//        int cycleTriedTimes = request.getCycleTriedTimes();
+//        if (cycleTriedTimes == 0) {
+//            request.getPage().addTargetUrl(request.setPriority(0).setCycleTriedTimes(1));
+//        } else {
+//            cycleTriedTimes++;
+//            if (cycleTriedTimes >= site.getCycleRetryTimes()) {
+//                return null;
+//            }
+//            request.getPage().addTargetUrl(request.setPriority(0).setCycleTriedTimes(cycleTriedTimes));
+//        }
+//        request.getPage().setNeedCycleRetry(true);
+//        return request.getPage();
+
+        return null;
     }
 }

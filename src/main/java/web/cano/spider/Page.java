@@ -3,7 +3,6 @@ package web.cano.spider;
 import org.apache.commons.lang3.StringUtils;
 import web.cano.spider.selector.Html;
 import web.cano.spider.selector.Json;
-import web.cano.spider.selector.Selectable;
 import web.cano.spider.utils.UrlUtils;
 
 import java.util.ArrayList;
@@ -16,8 +15,7 @@ import java.util.List;
  * {@link #getUrl()} get url of current page                   <br>
  * {@link #getHtml()}  get content of current page                 <br>
  * {@link #putField(String, Object)}  save extracted result            <br>
- * {@link #getResultItems()} get extract results to be used in {@link web.cano.spider.pipeline.Pipeline}<br>
- * {@link #addTargetRequests(java.util.List)} {@link #addTargetRequest(String)} add urls to fetch                 <br>
+ * {@link #getPageItems()} get extract results to be used in {@link web.cano.spider.pipeline.Pipeline}<br><br>
  *
  * @author code4crafter@gmail.com <br>
  * @see web.cano.spider.downloader.Downloader
@@ -25,10 +23,11 @@ import java.util.List;
  * @since 0.1.0
  */
 public class Page {
+    private Page fatherPage;
 
     private Request request;
 
-    private ResultItems resultItems = new ResultItems();
+    private PageItems pageItems = new PageItems(this);
 
     private Html html;
 
@@ -36,25 +35,37 @@ public class Page {
 
     private String rawText;
 
-    private Selectable url;
+    private String url;
 
     private int statusCode;
 
     private boolean needCycleRetry;
 
-    private List<Request> targetRequests = new ArrayList<Request>();
-    private List<Request> nextPageRequests = new ArrayList<Request>();
+    private List<Page> targetPages = new ArrayList<Page>();
+    private List<Page> nextPages = new ArrayList<Page>();
 
     private int depth =0;
 
-    private Object pageModel;
+    private Page() {
 
-    public Page() {
-        resultItems.setPage(this);
+    }
+
+    public Page(String  url){
+        this(url,null);
+    }
+
+    public Page(String url, Page fatherPage){
+        if (StringUtils.isBlank(url) || url.equals("#")) {
+            this.url = null;
+        }else {
+            this.url = url;
+        }
+
+        this.fatherPage = fatherPage;
     }
 
     public Page setSkip(boolean skip) {
-        resultItems.setSkip(skip);
+        pageItems.setSkip(skip);
         return this;
 
     }
@@ -78,7 +89,7 @@ public class Page {
      * @param field
      */
     public void putField(String key, Object field) {
-        resultItems.put(key, field);
+        pageItems.putItem(key, field);
     }
 
     /**
@@ -115,12 +126,12 @@ public class Page {
         this.html = html;
     }
 
-    public List<Request> getTargetRequests() {
-        return targetRequests;
+    public List<Page> getTargetPages() {
+        return targetPages;
     }
 
-    public List<Request> getNextPageRequests() {
-        return nextPageRequests;
+    public List<Page> getNextPages() {
+        return nextPages;
     }
 
     /**
@@ -129,95 +140,46 @@ public class Page {
      * @param requests
      */
     public void addTargetRequests(List<String> requests) {
-        synchronized (targetRequests) {
+        synchronized (targetPages) {
             for (String s : requests) {
                 if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
                     continue;
                 }
                 s = UrlUtils.canonicalizeUrl(s, url.toString());
-                targetRequests.add(new Request(s));
+                targetPages.add(new Page(s,this));
             }
         }
     }
 
-    /**
-     * add urls to fetch in depth
-     *
-     * @param requests
-     * @param level
-     */
-    public void addTargetRequests(List<String> requests, int level) {
-        synchronized (targetRequests) {
-            for (String s : requests) {
-                if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
-                    continue;
-                }
-                s = UrlUtils.canonicalizeUrl(s, url.toString());
-                targetRequests.add(new Request(s,level));
-            }
-        }
-    }
 
     /**
-     * add urls to fetch
+     * add page to fetch
      *
-     * @param requests
+     * @param page
      */
-    public void addTargetRequests(List<String> requests, long priority) {
-        synchronized (targetRequests) {
-            for (String s : requests) {
-                if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
-                    continue;
-                }
-                s = UrlUtils.canonicalizeUrl(s, url.toString());
-                targetRequests.add(new Request(s).setPriority(priority));
-            }
-        }
-    }
-
-    /**
-     * add url to fetch
-     *
-     * @param requestString
-     */
-    public void addTargetRequest(String requestString) {
-        if (StringUtils.isBlank(requestString) || requestString.equals("#")) {
+    public void addPagesToScheduler(Page page) {
+        if (page.getUrl() == null) {
             return;
         }
-        synchronized (targetRequests) {
-            requestString = UrlUtils.canonicalizeUrl(requestString, url.toString());
-            targetRequests.add(new Request(requestString));
+        synchronized (targetPages) {
+            targetPages.add(page);
         }
     }
 
     /**
-     * add requests to fetch
+     * add pages to fetch
      *
-     * @param request
+     * @param page
      */
-    public void addTargetRequest(Request request) {
-        synchronized (targetRequests) {
-            targetRequests.add(request);
+    public void addTargetPage(Page page) {
+        synchronized (targetPages) {
+            targetPages.add(page);
         }
     }
 
-    public void addNextPageRequest(Request request){
-        synchronized (nextPageRequests) {
-            nextPageRequests.add(request);
-        }
-    }
-
-    public void addSubPageRequest(Request request,String fatherUrl,String name){
-        synchronized (targetRequests){
-            request.setSubPageFatherUrl(fatherUrl, name);
-            targetRequests.add(request);
-        }
-    }
-
-    public void addContentNextPageRequest(Request request, String fatherUrl){
-        synchronized (targetRequests){
-            request.setFatherUrl(fatherUrl);
-            targetRequests.add(request);
+    public void addNextPage(Page page){
+        synchronized (nextPages) {
+            nextPages.add(page);
         }
     }
 
@@ -226,11 +188,11 @@ public class Page {
      *
      * @return url of current page
      */
-    public Selectable getUrl() {
+    public String getUrl() {
         return url;
     }
 
-    public void setUrl(Selectable url) {
+    public void setUrl(String url) {
         this.url = url;
     }
 
@@ -253,11 +215,11 @@ public class Page {
 
     public void setRequest(Request request) {
         this.request = request;
-        this.resultItems.setRequest(request);
+        //this.pageItems.setRequest(request);
     }
 
-    public ResultItems getResultItems() {
-        return resultItems;
+    public PageItems getPageItems() {
+        return pageItems;
     }
 
     public int getStatusCode() {
@@ -277,24 +239,23 @@ public class Page {
         return this;
     }
 
-    public void setPageModel(Object pageModel) {
-        this.pageModel = pageModel;
-        this.resultItems.setPageModel(pageModel);
+    public Page getFatherPage() {
+        return fatherPage;
     }
 
-    public Object getPageModel() {
-        return pageModel;
+    public void setFatherPage(Page fatherPage) {
+        this.fatherPage = fatherPage;
     }
 
     @Override
     public String toString() {
         return "Page{" +
                 "request=" + request +
-                ", resultItems=" + resultItems +
+                ", resultItems=" + pageItems +
                 ", rawText='" + rawText + '\'' +
                 ", url=" + url +
                 ", statusCode=" + statusCode +
-                ", targetRequests=" + targetRequests +
+                ", targetPages=" + targetPages +
                 '}';
     }
 }

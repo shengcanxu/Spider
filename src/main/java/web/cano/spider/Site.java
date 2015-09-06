@@ -6,7 +6,6 @@ import org.apache.http.HttpHost;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.proxy.ProxyPool;
-import web.cano.spider.utils.UrlUtils;
 
 import java.util.*;
 
@@ -238,51 +237,6 @@ public class Site {
         return acceptStatCode;
     }
 
-    /**
-     * get start urls
-     *
-     * @return start urls
-     * @see #getStartRequests
-     * @deprecated
-     */
-    @Deprecated
-    public List<String> getStartUrls() {
-        return UrlUtils.convertToUrls(startRequests);
-    }
-
-    public List<Request> getStartRequests() {
-        return startRequests;
-    }
-//
-//    /**
-//     * Add a url to start url.<br>
-//     * Because urls are more a Spider's property than Site, move it to {@link Spider#addUrl(String...)}}
-//     *
-//     * @param startUrl
-//     * @return this
-//     * @see Spider#addUrl(String...)
-//     * @deprecated
-//     */
-//    public Site addStartUrl(String startUrl) {
-//        return addStartRequest(new Request(startUrl));
-//    }
-
-    /**
-     * Add a url to start url.<br>
-     * Because urls are more a Spider's property than Site, move it to {@link Spider#addRequest(Request...)}}
-     *
-     * @param startRequest
-     * @return this
-     * @see Spider#addRequest(Request...)
-     * @deprecated
-     */
-    public Site addStartRequest(Request startRequest) {
-        this.startRequests.add(startRequest);
-        if (domain == null && startRequest.getUrl() != null) {
-            domain = UrlUtils.getDomain(startRequest.getUrl());
-        }
-        return this;
-    }
 
     /**
      * Set the interval between the processing of two pages.<br>
@@ -454,7 +408,7 @@ public class Site {
                 ", userAgent='" + userAgent + "\'\n" +
                 ", cookies=" + defaultCookies + "\n" +
                 ", charset='" + charset + "\'\n" +
-                ", startRequests=" + startRequests + "\n" +
+                ", startPages=" + startRequests + "\n" +
                 ", sleepTime=" + sleepTime + "\n" +
                 ", retryTimes=" + retryTimes + "\n" +
                 ", cycleRetryTimes=" + cycleRetryTimes + "\n" +

@@ -1,24 +1,23 @@
 package web.cano.spider;
 
-import com.google.common.collect.Lists;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.downloader.Downloader;
 import web.cano.spider.downloader.HttpClientDownloader;
-import web.cano.spider.pipeline.CollectorPipeline;
 import web.cano.spider.pipeline.ConsolePipeline;
 import web.cano.spider.pipeline.Pipeline;
-import web.cano.spider.pipeline.ResultItemsCollectorPipeline;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.QueueScheduler;
 import web.cano.spider.scheduler.Scheduler;
 import web.cano.spider.thread.CountableThreadPool;
-import web.cano.spider.utils.UrlUtils;
 
 import java.io.Closeable;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -65,7 +64,7 @@ public class Spider implements Runnable, Task {
 
     protected PageProcessor pageProcessor;
 
-    protected List<Request> startRequests;
+    protected List<Page> startPages;
 
     protected Site site;
 
@@ -128,33 +127,6 @@ public class Spider implements Runnable, Task {
     public Spider(PageProcessor pageProcessor) {
         this.pageProcessor = pageProcessor;
         this.site = pageProcessor.getSite();
-        this.startRequests = pageProcessor.getSite().getStartRequests();
-    }
-
-    /**
-     * Set startUrls of Spider.<br>
-     * Prior to startUrls of Site.
-     *
-     * @param startUrls
-     * @return this
-     */
-    public Spider startUrls(List<String> startUrls) {
-        checkIfRunning();
-        this.startRequests = UrlUtils.convertToRequests(startUrls);
-        return this;
-    }
-
-    /**
-     * Set startUrls of Spider.<br>
-     * Prior to startUrls of Site.
-     *
-     * @param startRequests
-     * @return this
-     */
-    public Spider startRequest(List<Request> startRequests) {
-        checkIfRunning();
-        this.startRequests = startRequests;
-        return this;
     }
 
     /**
@@ -194,9 +166,9 @@ public class Spider implements Runnable, Task {
         Scheduler oldScheduler = this.scheduler;
         this.scheduler = scheduler;
         if (oldScheduler != null) {
-            Request request;
-            while ((request = oldScheduler.poll(this)) != null) {
-                this.scheduler.push(request, this);
+            Page page;
+            while ((page = oldScheduler.poll(this)) != null) {
+                this.scheduler.push(page, this);
             }
         }
         return this;
@@ -292,17 +264,17 @@ public class Spider implements Runnable, Task {
                 threadPool = new CountableThreadPool(threadNum);
             }
         }
-        if (startRequests != null) {
+        if (startPages != null) {
             if(site.isDeepFirst()){
-                for(int i=startRequests.size()-1; i>=0; i--){
-                    scheduler.push(startRequests.get(i),this);
+                for(int i= startPages.size()-1; i>=0; i--){
+                    scheduler.push(startPages.get(i),this);
                 }
             }else{
-                for(int i=0; i<startRequests.size(); i++){
-                    scheduler.push(startRequests.get(i),this);
+                for(int i=0; i< startPages.size(); i++){
+                    scheduler.push(startPages.get(i),this);
                 }
             }
-            startRequests.clear();
+            startPages.clear();
         }
         startTime = new Date();
     }
@@ -316,19 +288,19 @@ public class Spider implements Runnable, Task {
         preRun();
 
         while (!Thread.currentThread().isInterrupted() && stat.get() == STAT_RUNNING) {
-            Request request = scheduler.poll(this);
-            if (request == null) {
+            Page page = scheduler.poll(this);
+            if (page == null) {
                 if (threadPool.getThreadAlive() == 0 && exitWhenComplete) {
                     //print out the un-parsed urls
-                    List<Request> leftRequests = scheduler.checkIfCompleteParse(this);
-                    if(leftRequests != null && leftRequests.size() > 0){
+                    List<Page> leftPages = scheduler.checkIfCompleteParse(this);
+                    if(leftPages != null && leftPages.size() > 0){
                         logger.info("some urls are not parsed:");
-                        for(Request r : leftRequests){
-                            logger.info(r.getUrl());
+                        for(Page p : leftPages){
+                            logger.info(p.getUrl());
                         }
                         logger.info("restart un-parsed urls");
-                        for(Request r : leftRequests){
-                            scheduler.push(r,this);
+                        for(Page p : leftPages){
+                            scheduler.push(p,this);
                         }
                         continue;
                     }
@@ -337,7 +309,7 @@ public class Spider implements Runnable, Task {
                 // wait until new url added
                 waitNewUrl();
             } else {
-                final Request requestFinal = request;
+                final Request requestFinal = new Request(page);
                 threadPool.execute(new Runnable() {
                     @Override
                     public void run() {
@@ -346,7 +318,7 @@ public class Spider implements Runnable, Task {
                             onSuccess(requestFinal);
                         } catch (Exception e) {
                             onError(requestFinal);
-                            logger.error("process request " + requestFinal + " error", e);
+                            logger.error("process page " + requestFinal + " error", e);
                         } finally {
                             if (site.getHttpProxyPool()!=null && site.getHttpProxyPool().isEnable()) {
                                 site.returnHttpProxyToPool(requestFinal.getProxy(), requestFinal.getStatusCode());
@@ -427,20 +399,6 @@ public class Spider implements Runnable, Task {
         }
     }
 
-    /**
-     * Process specific urls without url discovering.
-     *
-     * @param urls urls to process
-     */
-    public void test(String... urls) {
-        initComponent();
-        if (urls.length > 0) {
-            for (String url : urls) {
-                processRequest(new Request(url));
-            }
-        }
-    }
-
     protected void processRequest(Request request) {
         if(request.getDepth() >= site.getMaxDeep()){
             return;
@@ -462,7 +420,7 @@ public class Spider implements Runnable, Task {
         }
         pageProcessor.process(page);
         extractAndAddRequests(page, spawnUrl);
-        if (!page.getResultItems().isSkip()) {
+        if (!page.getPageItems().isSkip()) {
             for (Pipeline pipeline : pipelines) {
                 pipeline.process(page, this);
             }
@@ -481,42 +439,42 @@ public class Spider implements Runnable, Task {
     }
 
     protected void extractAndAddRequests(Page page, boolean spawnUrl) {
-        if (spawnUrl && CollectionUtils.isNotEmpty(page.getTargetRequests())) {
-            List<Request> requests = page.getTargetRequests();
-            logger.info("get " + requests.size() + " links to follow.");
-            for (Request request : requests) {
-                request.setDepth(page.getDepth()+1);
-                logger.info(request.getUrl());
+        if (spawnUrl && CollectionUtils.isNotEmpty(page.getTargetPages())) {
+            List<Page> pages = page.getTargetPages();
+            logger.info("get " + pages.size() + " links to follow.");
+            for (Page p : pages) {
+                p.setDepth(page.getDepth()+1);
+                logger.info(p.getUrl());
             }
 
-            List<Request> nextPageRequests = page.getNextPageRequests();
-            logger.info("get " + nextPageRequests.size() + " next pages to follow.");
-            for(Request request : nextPageRequests){
-                request.setDepth(page.getDepth());
-                logger.info(request.getUrl());
+            List<Page> nextPages = page.getNextPages();
+            logger.info("get " + nextPages.size() + " next pages to follow.");
+            for(Page page1 : nextPages){
+                page1.setDepth(page.getDepth());
+                logger.info(page1.getUrl());
             }
 
-            addRequests(requests);
-            addRequests(nextPageRequests);
+            addPagesToScheduler(pages);
+            addPagesToScheduler(nextPages);
         }
     }
 
-    public Spider addRequest(Request request) {
-        scheduler.push(request, this);
+    public Spider addStartPage(Page startPage){
+        return addPageToScheduler(startPage);
+    }
+
+    public Spider addPageToScheduler(Page page) {
+        scheduler.push(page, this);
         signalNewUrl();
         return this;
     }
 
-    public Spider addRequests(List<Request> requests){
-        if(site.isDeepFirst()){
-            for(int i=requests.size()-1; i>=0; i--){
-                scheduler.push(requests.get(i),this);
-            }
-        }else{
-            for(int i=0; i<requests.size(); i++){
-                scheduler.push(requests.get(i),this);
-            }
+    public Spider addPagesToScheduler(List<Page> pages){
+        for(int i=0; i<pages.size(); i++){
+            scheduler.push(pages.get(i),this);
         }
+
+        //TODO:在scheduler里面实现深度优先还是宽度优先
         signalNewUrl();
         return this;
     }
@@ -532,41 +490,7 @@ public class Spider implements Runnable, Task {
         thread.setDaemon(false);
         thread.start();
     }
-
-    /**
-     * Download urls synchronizing.
-     *
-     * @param urls
-     * @return
-     */
-    public <T> List<T> getAll(Collection<String> urls) {
-        destroyWhenExit = false;
-        spawnUrl = false;
-        startRequests.clear();
-        List<Request> requests = UrlUtils.convertToRequests(urls);
-        addRequests(requests);
-
-        CollectorPipeline collectorPipeline = getCollectorPipeline();
-        pipelines.add(collectorPipeline);
-        run();
-        spawnUrl = true;
-        destroyWhenExit = true;
-        return collectorPipeline.getCollected();
-    }
-
-    protected CollectorPipeline getCollectorPipeline() {
-        return new ResultItemsCollectorPipeline();
-    }
-
-    public <T> T get(String url) {
-        List<String> urls = Lists.newArrayList(url);
-        List<T> resultItemses = getAll(urls);
-        if (resultItemses != null && resultItemses.size() > 0) {
-            return resultItemses.get(0);
-        } else {
-            return null;
-        }
-    }
+    
 
     private void waitNewUrl() {
         newUrlLock.lock();

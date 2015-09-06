@@ -1,6 +1,7 @@
 package web.cano.spider.scheduler;
 
 import org.apache.http.annotation.ThreadSafe;
+import web.cano.spider.Page;
 import web.cano.spider.Request;
 import web.cano.spider.Task;
 
@@ -19,15 +20,15 @@ import java.util.concurrent.LinkedBlockingQueue;
 @ThreadSafe
 public class QueueScheduler extends DuplicateRemovedScheduler implements MonitorableScheduler {
 
-    private BlockingQueue<Request> queue = new LinkedBlockingQueue<Request>();
+    private BlockingQueue<Page> queue = new LinkedBlockingQueue<Page>();
 
     @Override
-    public void pushWhenNoDuplicate(Request request, Task task) {
-        queue.add(request);
+    public void pushWhenNoDuplicate(Page page, Task task) {
+        queue.add(page);
     }
 
     @Override
-    public synchronized Request poll(Task task) {
+    public synchronized Page poll(Task task) {
         return queue.poll();
     }
 

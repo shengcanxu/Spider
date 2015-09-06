@@ -1,10 +1,10 @@
 package web.cano.spiderproject.woshipm.samples;
 
 import web.cano.spider.Page;
-import web.cano.spider.Request;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.processor.PageProcessor;
+import web.cano.spider.selector.PlainText;
 
 /**
  * @author code4crafter@gmail.com <br>
@@ -25,7 +25,7 @@ public class SinaBlogProcessor implements PageProcessor {
     @Override
     public void process(Page page) {
         //列表页
-        if (page.getUrl().regex(URL_LIST).match()) {
+        if (new PlainText(page.getUrl()).regex(URL_LIST).match()) {
             page.addTargetRequests(page.getHtml().xpath("//div[@class=\"articleList\"]").links().regex(URL_POST).all());
             page.addTargetRequests(page.getHtml().links().regex(URL_LIST).all());
             //文章页
@@ -44,7 +44,7 @@ public class SinaBlogProcessor implements PageProcessor {
 
     public static void main(String[] args) {
         Spider.create(new SinaBlogProcessor())
-                .addRequest(new Request("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
+                .addStartPage(new Page("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
                 .run();
     }
 }

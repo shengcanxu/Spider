@@ -38,10 +38,7 @@ public class Request implements Serializable {
 
     private String fatherUrl;
 
-    /**
-     * Store additional information in extras.
-     */
-    private Map<String, Object> extras;
+    private Page page;
 
     /**
      * store the namevaluepair for post request
@@ -68,22 +65,33 @@ public class Request implements Serializable {
     private Request() {
     }
 
-    public Request(String url) {
-        this(url,false);
+    public Request(Page page) {
+        this(page,false);
     }
 
-    public Request(String url,boolean isPost){
+    public Request(Page page,boolean isPost){
         if(isPost){
-            this.url = url;
+            this.url = page.getUrl();
             this.setMethod(HttpConstant.Method.POST);
         }else{
-            this.url = url;
+            this.url = page.getUrl();
         }
+
+        this.page = page;
     }
 
-    public Request(String url, int depth){
-        this.url = url;
-        this.depth = depth;
+//    public Request(String url, int depth){
+//        this.url = url;
+//        this.depth = depth;
+//    }
+
+
+    public Page getPage() {
+        return page;
+    }
+
+    public void setPage(Page page) {
+        this.page = page;
     }
 
     /**
@@ -145,21 +153,6 @@ public class Request implements Serializable {
         return this;
     }
 
-    public Object getExtra(String key) {
-        if (extras == null) {
-            return null;
-        }
-        return extras.get(key);
-    }
-
-    public Request putExtra(String key, Object value) {
-        if (extras == null) {
-            extras = new HashMap<String, Object>();
-        }
-        extras.put(key, value);
-        return this;
-    }
-
     public Map<String, String> getContents() {
         return contents;
     }
@@ -188,17 +181,9 @@ public class Request implements Serializable {
         return true;
     }
 
-    public Map<String, Object> getExtras() {
-        return extras;
-    }
-
     @Override
     public int hashCode() {
         return url.hashCode();
-    }
-
-    public void setExtras(Map<String, Object> extras) {
-        this.extras = extras;
     }
 
     public void setUrl(String url) {
@@ -277,7 +262,6 @@ public class Request implements Serializable {
         return "Request{" +
                 "url='" + url + '\'' +
                 ", method='" + method + '\'' +
-                ", extras=" + extras +
                 ", priority=" + priority +
                 '}';
     }

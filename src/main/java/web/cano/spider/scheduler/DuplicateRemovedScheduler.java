@@ -2,6 +2,7 @@ package web.cano.spider.scheduler;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import web.cano.spider.Page;
 import web.cano.spider.Request;
 import web.cano.spider.Task;
 import web.cano.spider.scheduler.component.DuplicateRemover;
@@ -29,11 +30,11 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
     }
 
     @Override
-    public void push(Request request, Task task) {
-        logger.trace("get a candidate url {}", request.getUrl());
-        if (!duplicatedRemover.isDuplicate(request, task) ) {
-            logger.debug("push to queue {}", request.getUrl());
-            pushWhenNoDuplicate(request, task);
+    public void push(Page page, Task task) {
+        logger.trace("get a candidate url {}", page.getUrl());
+        if (!duplicatedRemover.isDuplicate(page, task) ) {
+            logger.debug("push to queue {}", page.getUrl());
+            pushWhenNoDuplicate(page, task);
         }
     }
 
@@ -41,7 +42,7 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
         return request.getCycleTriedTimes() != 0;
     }
 
-    protected void pushWhenNoDuplicate(Request request, Task task) {
+    protected void pushWhenNoDuplicate(Page page, Task task) {
 
     }
 }

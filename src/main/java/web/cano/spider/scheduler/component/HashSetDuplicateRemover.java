@@ -1,7 +1,7 @@
 package web.cano.spider.scheduler.component;
 
 import com.google.common.collect.Sets;
-import web.cano.spider.Request;
+import web.cano.spider.Page;
 import web.cano.spider.Task;
 
 import java.util.Set;
@@ -15,12 +15,8 @@ public class HashSetDuplicateRemover implements DuplicateRemover {
     private Set<String> urls = Sets.newSetFromMap(new ConcurrentHashMap<String, Boolean>());
 
     @Override
-    public boolean isDuplicate(Request request, Task task) {
-        return !urls.add(getUrl(request));
-    }
-
-    protected String getUrl(Request request) {
-        return request.getUrl();
+    public boolean isDuplicate(Page page, Task task) {
+        return !urls.add(page.getUrl());
     }
 
     @Override

@@ -25,7 +25,7 @@ public class SpiderTest {
             public void process(Page page, Task task) {
                 System.out.println(1);
             }
-        }).addRequest(new Request("http://www.oschina.net/")).thread(1);
+        }).addPageToScheduler(new Page("http://www.oschina.net/")).thread(1);
         spider.start();
         Thread.sleep(1000);
         spider.stop();
@@ -60,7 +60,7 @@ public class SpiderTest {
         }).setDownloader(new Downloader() {
             @Override
             public Page download(Request request, Task task) {
-                return new Page().setRawText("");
+                return new Page("http://www.baidu.com").setRawText("");
             }
 
             @Override
@@ -74,19 +74,19 @@ public class SpiderTest {
             private Random random = new Random();
 
             @Override
-            public void push(Request request, Task task) {
+            public void push(Page page, Task task) {
 
             }
 
             @Override
-            public synchronized Request poll(Task task) {
+            public synchronized Page poll(Task task) {
                 if (count.incrementAndGet() > 1000) {
                     return null;
                 }
                 if (random.nextInt(100)>90){
                     return null;
                 }
-                return new Request("test");
+                return new Page("test");
             }
 
             @Override

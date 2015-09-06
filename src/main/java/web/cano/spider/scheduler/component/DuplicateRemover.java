@@ -1,6 +1,6 @@
 package web.cano.spider.scheduler.component;
 
-import web.cano.spider.Request;
+import web.cano.spider.Page;
 import web.cano.spider.Task;
 
 /**
@@ -13,11 +13,11 @@ public interface DuplicateRemover {
      *
      * Check whether the request is duplicate.
      *
-     * @param request
+     * @param page
      * @param task
      * @return
      */
-    public boolean isDuplicate(Request request, Task task);
+    public boolean isDuplicate(Page page, Task task);
 
     /**
      * Get TotalRequestsCount for monitor.

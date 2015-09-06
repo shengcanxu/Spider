@@ -1,6 +1,7 @@
 package web.cano.spider.utils;
 
 import org.apache.commons.lang3.StringUtils;
+import web.cano.spider.Page;
 import web.cano.spider.Request;
 
 import java.net.MalformedURLException;
@@ -21,7 +22,7 @@ import java.util.regex.Pattern;
 public class UrlUtils {
 
     /**
-     * canonicalizeUrl
+     * canonicalize Url
      * <p/>
      * Borrowed from Jsoup.
      *
@@ -121,7 +122,7 @@ public class UrlUtils {
     public static List<Request> convertToRequests(Collection<String> urls) {
         List<Request> requestList = new ArrayList<Request>(urls.size());
         for (String url : urls) {
-            requestList.add(new Request(url));
+            requestList.add(new Request(new Page(url)));
         }
         return requestList;
     }

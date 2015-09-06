@@ -11,15 +11,14 @@ import java.util.UUID;
  */
 public class FilePipelineTest {
 
-    private static ResultItems resultItems;
+    private static PageItems pageItems;
     private static Task task;
 
     @BeforeClass
     public static void before() {
-        resultItems = new ResultItems();
-        resultItems.put("content", "webmagic 爬虫工具");
-        Request request = new Request("http://www.baidu.com");
-        resultItems.setRequest(request);
+        pageItems = new PageItems(new Page("http://www.baidu.com"));
+        pageItems.putItem("content", "webmagic 爬虫工具");
+        Request request = new Request(new Page("http://www.baidu.com"));
 
         task = new Task() {
             @Override

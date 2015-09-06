@@ -2,7 +2,7 @@ package web.cano.spider.scheduler.component;
 
 import com.google.common.hash.BloomFilter;
 import com.google.common.hash.Funnels;
-import web.cano.spider.Request;
+import web.cano.spider.Page;
 import web.cano.spider.Task;
 
 import java.nio.charset.Charset;
@@ -45,17 +45,13 @@ public class BloomFilterDuplicateRemover implements DuplicateRemover {
     private final BloomFilter<CharSequence> bloomFilter;
 
     @Override
-    public boolean isDuplicate(Request request, Task task) {
-        boolean isDuplicate = bloomFilter.mightContain(getUrl(request));
+    public boolean isDuplicate(Page page, Task task) {
+        boolean isDuplicate = bloomFilter.mightContain(page.getUrl());
         if (!isDuplicate) {
-            bloomFilter.put(getUrl(request));
+            bloomFilter.put(page.getUrl());
             counter.incrementAndGet();
         }
         return isDuplicate;
-    }
-
-    protected String getUrl(Request request) {
-        return request.getUrl();
     }
 
     @Override

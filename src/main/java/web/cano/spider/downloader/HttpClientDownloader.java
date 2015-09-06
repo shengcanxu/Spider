@@ -2,7 +2,7 @@ package web.cano.spider.downloader;
 
 import com.google.common.collect.Sets;
 import org.apache.commons.io.IOUtils;
-import org.apache.commons.lang .StringUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -24,7 +24,6 @@ import web.cano.spider.Page;
 import web.cano.spider.Request;
 import web.cano.spider.Site;
 import web.cano.spider.Task;
-import web.cano.spider.selector.PlainText;
 import web.cano.spider.utils.HttpConstant;
 import web.cano.spider.utils.UrlUtils;
 
@@ -176,12 +175,11 @@ public class HttpClientDownloader extends AbstractDownloader {
 
     protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
         String content = getContent(charset, httpResponse);
-        Page page = new Page();
-        page.setRawText(content);
-        page.setUrl(new PlainText(request.getUrl()));
-        page.setRequest(request);
-        page.setStatusCode(httpResponse.getStatusLine().getStatusCode());
-        return page;
+        request.getPage().setRawText(content);
+        request.getPage().setUrl(request.getUrl());
+        request.getPage().setRequest(request);
+        request.getPage().setStatusCode(httpResponse.getStatusLine().getStatusCode());
+        return request.getPage();
     }
 
     protected String getContent(String charset, HttpResponse httpResponse) throws IOException {

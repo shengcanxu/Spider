@@ -1,5 +1,6 @@
 package web.cano.spider.scheduler;
 
+import web.cano.spider.Page;
 import web.cano.spider.Request;
 import web.cano.spider.Task;
 
@@ -19,10 +20,10 @@ public interface Scheduler {
     /**
      * add a url to fetch
      *
-     * @param request
+     * @param page
      * @param task
      */
-    public void push(Request request, Task task);
+    public void push(Page page, Task task);
 
     /**
      * get an url to crawl
@@ -30,7 +31,7 @@ public interface Scheduler {
      * @param task the task of spider
      * @return the url to crawl
      */
-    public Request poll(Task task);
+    public Page poll(Task task);
 
     /**
      * 标志一个request or task执行完毕
@@ -39,9 +40,9 @@ public interface Scheduler {
     public void completeParse(Request request, Task task);
 
     /**
-     * 判断是否所有的request都执行完毕
+     * 判断是否所有的pages都执行完毕
      */
-    public List<Request> checkIfCompleteParse(Task task);
+    public List<Page> checkIfCompleteParse(Task task);
 
     /**
      * save to queue to db
