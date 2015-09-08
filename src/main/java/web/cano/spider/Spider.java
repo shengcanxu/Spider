@@ -127,18 +127,7 @@ public class Spider implements Runnable, Task {
     public Spider(PageProcessor pageProcessor) {
         this.pageProcessor = pageProcessor;
         this.site = pageProcessor.getSite();
-    }
-
-    /**
-     * Set an uuid for spider.<br>
-     * Default uuid is domain of site.<br>
-     *
-     * @param uuid
-     * @return this
-     */
-    public Spider setUUID(String uuid) {
-        this.uuid = uuid;
-        return this;
+        this.uuid = pageProcessor.getClass().getSimpleName();
     }
 
     /**
@@ -200,41 +189,6 @@ public class Spider implements Runnable, Task {
         return this;
     }
 
-    /**
-     * set pipelines for Spider
-     *
-     * @param pipelines
-     * @return this
-     * @see Pipeline
-     * @since 0.4.1
-     */
-    public Spider setPipelines(List<Pipeline> pipelines) {
-        checkIfRunning();
-        this.pipelines = pipelines;
-        return this;
-    }
-
-    /**
-     * clear the pipelines set
-     *
-     * @return this
-     */
-    public Spider clearPipeline() {
-        pipelines = new ArrayList<Pipeline>();
-        return this;
-    }
-
-    /**
-     * set the downloader of spider
-     *
-     * @param downloader
-     * @return this
-     * @see #setDownloader(web.cano.spider.downloader.Downloader)
-     * @deprecated
-     */
-    public Spider downloader(Downloader downloader) {
-        return setDownloader(downloader);
-    }
 
     /**
      * set the downloader of spider
@@ -359,7 +313,7 @@ public class Spider implements Runnable, Task {
     }
 
     protected void onSuccess(Request request) {
-        scheduler.completeParse(request, this);
+        scheduler.completeParse(request.getPage(), this);
 
         if (CollectionUtils.isNotEmpty(spiderListeners)) {
             for (SpiderListener spiderListener : spiderListeners) {
@@ -400,7 +354,7 @@ public class Spider implements Runnable, Task {
     }
 
     protected void processRequest(Request request) {
-        if(request.getDepth() >= site.getMaxDeep()){
+        if(request.getPage().getDepth() >= site.getMaxDeep()){
             return;
         }
 
@@ -410,17 +364,16 @@ public class Spider implements Runnable, Task {
             onError(request);
             return;
         }
-        page.setDepth(request.getDepth());  //add the level
 
         // for cycle retry
         if (page.isNeedCycleRetry()) {
-            extractAndAddRequests(page, true);
+            extractAndAddPages(page, true);
             sleep(site.getSleepTime());
             return;
         }
         pageProcessor.process(page);
-        extractAndAddRequests(page, spawnUrl);
-        if (!page.getPageItems().isSkip()) {
+        extractAndAddPages(page, spawnUrl);
+        if (!page.isSkip()) {
             for (Pipeline pipeline : pipelines) {
                 pipeline.process(page, this);
             }
@@ -438,7 +391,7 @@ public class Spider implements Runnable, Task {
         }
     }
 
-    protected void extractAndAddRequests(Page page, boolean spawnUrl) {
+    protected void extractAndAddPages(Page page, boolean spawnUrl) {
         if (spawnUrl && CollectionUtils.isNotEmpty(page.getTargetPages())) {
             List<Page> pages = page.getTargetPages();
             logger.info("get " + pages.size() + " links to follow.");

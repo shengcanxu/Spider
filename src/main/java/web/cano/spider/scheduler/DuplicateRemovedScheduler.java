@@ -3,7 +3,6 @@ package web.cano.spider.scheduler;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
-import web.cano.spider.Request;
 import web.cano.spider.Task;
 import web.cano.spider.scheduler.component.DuplicateRemover;
 import web.cano.spider.scheduler.component.HashSetDuplicateRemover;
@@ -36,10 +35,6 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
             logger.debug("push to queue {}", page.getUrl());
             pushWhenNoDuplicate(page, task);
         }
-    }
-
-    protected boolean shouldReserved(Request request) {
-        return request.getCycleTriedTimes() != 0;
     }
 
     protected void pushWhenNoDuplicate(Page page, Task task) {

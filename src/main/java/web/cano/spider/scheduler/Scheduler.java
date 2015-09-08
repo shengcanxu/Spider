@@ -1,7 +1,6 @@
 package web.cano.spider.scheduler;
 
 import web.cano.spider.Page;
-import web.cano.spider.Request;
 import web.cano.spider.Task;
 
 import java.util.List;
@@ -37,7 +36,7 @@ public interface Scheduler {
      * 标志一个request or task执行完毕
      * @param task
      */
-    public void completeParse(Request request, Task task);
+    public void completeParse(Page page, Task task);
 
     /**
      * 判断是否所有的pages都执行完毕

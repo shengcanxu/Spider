@@ -41,20 +41,13 @@ public abstract class AbstractDownloader implements Downloader {
     }
 
     protected Page addToCycleRetry(Request request, Site site) {
-        //TODO: 需要将priority和cycleretrytimes设置到page里面去
-//        int cycleTriedTimes = request.getCycleTriedTimes();
-//        if (cycleTriedTimes == 0) {
-//            request.getPage().addTargetUrl(request.setPriority(0).setCycleTriedTimes(1));
-//        } else {
-//            cycleTriedTimes++;
-//            if (cycleTriedTimes >= site.getCycleRetryTimes()) {
-//                return null;
-//            }
-//            request.getPage().addTargetUrl(request.setPriority(0).setCycleTriedTimes(cycleTriedTimes));
-//        }
-//        request.getPage().setNeedCycleRetry(true);
-//        return request.getPage();
-
-        return null;
+        int cycleTriedTimes = request.getPage().getCycleTriedTimes();
+        cycleTriedTimes++;
+        if (cycleTriedTimes >= site.getCycleRetryTimes()) {
+            return null;
+        }
+        request.getPage().addTargetPage(request.getPage().setCycleTriedTimes(cycleTriedTimes));
+        request.getPage().setNeedCycleRetry(true);
+        return request.getPage();
     }
 }

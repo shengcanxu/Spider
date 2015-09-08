@@ -18,8 +18,6 @@ public class PageItems {
 
     private Map<String, Type> fields = new LinkedHashMap<String, Type>();
 
-    private boolean skip = false;
-
     private Page page;
 
     private PageItems(){}
@@ -30,7 +28,6 @@ public class PageItems {
 
     public PageItems clone(){
         PageItems pageItems = new PageItems();
-        pageItems.setSkip(skip);
         pageItems.setPage(page);
         pageItems.getAllItems().putAll(this.items);
         pageItems.getAllFields().putAll(this.fields);
@@ -72,29 +69,6 @@ public class PageItems {
         return this;
     }
 
-    /**
-     * Whether to skip the result.<br>
-     * Result which is skipped will not be processed by Pipeline.
-     *
-     * @return whether to skip the result
-     */
-    public boolean isSkip() {
-        return skip;
-    }
-
-
-    /**
-     * Set whether to skip the result.<br>
-     * Result which is skipped will not be processed by Pipeline.
-     *
-     * @param skip whether to skip the result
-     * @return this
-     */
-    public PageItems setSkip(boolean skip) {
-        this.skip = skip;
-        return this;
-    }
-
     public Page getPage() {
         return page;
     }
@@ -107,7 +81,6 @@ public class PageItems {
     public String toString() {
         return "ResultItems{" +
                 "items=" + items +
-                ", skip=" + skip +
                 '}';
     }
 }

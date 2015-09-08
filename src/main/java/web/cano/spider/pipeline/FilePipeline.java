@@ -39,8 +39,8 @@ public class FilePipeline extends FilePersistentBase implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
+        if(page.isSkip()) return;
         PageItems pageItems = page.getPageItems();
-        if(pageItems.isSkip()) return;
 
         String path = this.path + PATH_SEPERATOR + task.getUUID() + PATH_SEPERATOR;
         try {

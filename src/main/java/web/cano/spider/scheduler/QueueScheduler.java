@@ -2,7 +2,6 @@ package web.cano.spider.scheduler;
 
 import org.apache.http.annotation.ThreadSafe;
 import web.cano.spider.Page;
-import web.cano.spider.Request;
 import web.cano.spider.Task;
 
 import java.util.List;
@@ -33,7 +32,7 @@ public class QueueScheduler extends DuplicateRemovedScheduler implements Monitor
     }
 
     @Override
-    public void completeParse(Request request, Task task) {
+    public void completeParse(Page page, Task task){
 
     }
 

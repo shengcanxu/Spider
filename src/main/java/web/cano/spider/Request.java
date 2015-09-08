@@ -3,7 +3,6 @@ package web.cano.spider;
 import org.apache.http.HttpHost;
 import org.apache.http.NameValuePair;
 import org.apache.http.message.BasicNameValuePair;
-import web.cano.spider.utils.Experimental;
 import web.cano.spider.utils.HttpConstant;
 
 import java.io.Serializable;
@@ -22,8 +21,6 @@ public class Request implements Serializable {
 
     private static final long serialVersionUID = 2062192774891352043L;
 
-    //Extra values
-    private int cycleTriedTimes = 0;
     private int statusCode = 0;
     private HttpHost proxy;
 
@@ -31,12 +28,6 @@ public class Request implements Serializable {
 
     private String method;
 
-    private int depth = 0;
-
-    private String subPageFatherUrl;
-    private String subPageName;
-
-    private String fatherUrl;
 
     private Page page;
 
@@ -49,18 +40,6 @@ public class Request implements Serializable {
      * store the content extracted from parseurl page
      */
     private Map<String, String> contents;
-
-    /**
-     * true if want to parsed this request even it's already parsed
-     */
-    private boolean isRefresh = false;
-
-    /**
-     * Priority of the request.<br>
-     * The bigger will be processed earlier. <br>
-     * @see web.cano.spider.scheduler.PriorityScheduler
-     */
-    private long priority;
 
     private Request() {
     }
@@ -92,65 +71,6 @@ public class Request implements Serializable {
 
     public void setPage(Page page) {
         this.page = page;
-    }
-
-    /**
-     * depth of the page in parsing list
-     * @return
-     */
-    public int getDepth(){
-        return this.depth;
-    }
-
-    public void setDepth(int depth){
-        this.depth = depth;
-    }
-
-    public long getPriority() {
-        return priority;
-    }
-
-    public  boolean isSubPage(){
-        return subPageFatherUrl != null;
-    }
-
-    public void  setSubPageFatherUrl(String fatherUrl,String subpageName){
-        this.subPageFatherUrl = fatherUrl;
-        this.subPageName = subpageName;
-    }
-
-    public String getSubPageName() {
-        return subPageName;
-    }
-
-    public String getSubPageFatherUrl(){
-        return subPageFatherUrl;
-    }
-
-    public boolean hasFatherPage() {
-        return fatherUrl != null;
-    }
-
-    public String getFatherUrl() {
-        return fatherUrl;
-    }
-
-    public void setFatherUrl(String fatherUrl) {
-        this.fatherUrl = fatherUrl;
-    }
-
-    /**
-     * Set the priority of request for sorting.<br>
-     * Need a scheduler supporting priority.<br>
-     * @see web.cano.spider.scheduler.PriorityScheduler
-     *
-     * @param priority
-     * @return this
-     */
-    @Experimental
-    public Request setPriority(long priority) {
-        this.priority = priority;
-        return this;
     }
 
     public Map<String, String> getContents() {
@@ -221,15 +141,6 @@ public class Request implements Serializable {
         this.postData.add(nameValuePair);
     }
 
-    public int getCycleTriedTimes() {
-        return cycleTriedTimes;
-    }
-
-    public Request setCycleTriedTimes(int cycleTriedTimes) {
-        this.cycleTriedTimes = cycleTriedTimes;
-        return this;
-    }
-
     public int getStatusCode() {
         return statusCode;
     }
@@ -248,21 +159,12 @@ public class Request implements Serializable {
         return this;
     }
 
-    public boolean isRefresh() {
-        return isRefresh;
-    }
-
-    public Request setRefresh(boolean isRefresh) {
-        this.isRefresh = isRefresh;
-        return this;
-    }
 
     @Override
     public String toString() {
         return "Request{" +
                 "url='" + url + '\'' +
                 ", method='" + method + '\'' +
-                ", priority=" + priority +
                 '}';
     }
 }

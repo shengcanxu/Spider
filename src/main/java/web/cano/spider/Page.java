@@ -30,21 +30,25 @@ public class Page {
     private PageItems pageItems = new PageItems(this);
 
     private Html html;
-
     private Json json;
-
     private String rawText;
-
     private String url;
 
     private int statusCode;
-
     private boolean needCycleRetry;
+    private int cycleTriedTimes = 0;
 
     private List<Page> targetPages = new ArrayList<Page>();
     private List<Page> nextPages = new ArrayList<Page>();
 
     private int depth =0;
+
+    private boolean skip = false;
+
+    /**
+     * true if want to parsed this request even it's already parsed
+     */
+    private boolean isRefresh = false;
 
     private Page() {
 
@@ -64,8 +68,34 @@ public class Page {
         this.fatherPage = fatherPage;
     }
 
+    public int getCycleTriedTimes() {
+        return cycleTriedTimes;
+    }
+
+    public Page setCycleTriedTimes(int cycleTriedTimes) {
+        this.cycleTriedTimes = cycleTriedTimes;
+        return this;
+    }
+
+    /**
+     * Whether to skip the result.<br>
+     * Result which is skipped will not be processed by Pipeline.
+     *
+     * @return whether to skip the result
+     */
+    public boolean isSkip() {
+        return skip;
+    }
+
+    /**
+     * Set whether to skip the result.<br>
+     * Result which is skipped will not be processed by Pipeline.
+     *
+     * @param skip whether to skip the result
+     * @return this
+     */
     public Page setSkip(boolean skip) {
-        pageItems.setSkip(skip);
+        this.skip = skip;
         return this;
 
     }
@@ -117,14 +147,6 @@ public class Page {
         return json;
     }
 
-    /**
-     * @param html
-     * @deprecated since 0.4.0
-     * The html is parse just when first time of calling {@link #getHtml()}, so use {@link #setRawText(String)} instead.
-     */
-    public void setHtml(Html html) {
-        this.html = html;
-    }
 
     public List<Page> getTargetPages() {
         return targetPages;
@@ -137,11 +159,11 @@ public class Page {
     /**
      * add urls to fetch
      *
-     * @param requests
+     * @param pageUrls
      */
-    public void addTargetRequests(List<String> requests) {
+    public void addTargetPage(List<String> pageUrls) {
         synchronized (targetPages) {
-            for (String s : requests) {
+            for (String s : pageUrls) {
                 if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
                     continue;
                 }
@@ -151,20 +173,6 @@ public class Page {
         }
     }
 
-
-    /**
-     * add page to fetch
-     *
-     * @param page
-     */
-    public void addPagesToScheduler(Page page) {
-        if (page.getUrl() == null) {
-            return;
-        }
-        synchronized (targetPages) {
-            targetPages.add(page);
-        }
-    }
 
     /**
      * add pages to fetch
@@ -247,8 +255,16 @@ public class Page {
         this.fatherPage = fatherPage;
     }
 
-    @Override
-    public String toString() {
+    public boolean isRefresh() {
+        return isRefresh;
+    }
+
+    public Page setRefresh(boolean isRefresh) {
+        this.isRefresh = isRefresh;
+        return this;
+    }
+
+    public String toJson() {
         return "Page{" +
                 "request=" + request +
                 ", resultItems=" + pageItems +
@@ -257,5 +273,9 @@ public class Page {
                 ", statusCode=" + statusCode +
                 ", targetPages=" + targetPages +
                 '}';
+    }
+
+    public static Page fromJson(String json){
+        return new Page();
     }
 }

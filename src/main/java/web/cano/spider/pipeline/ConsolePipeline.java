@@ -20,8 +20,8 @@ public class ConsolePipeline implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
+        if(page.isSkip()) return;
         PageItems pageItems = page.getPageItems();
-        if(pageItems.isSkip()) return;
 
         StringBuilder sb = new StringBuilder();
         sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");

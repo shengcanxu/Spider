@@ -26,14 +26,15 @@ public class SinaBlogProcessor implements PageProcessor {
     public void process(Page page) {
         //列表页
         if (new PlainText(page.getUrl()).regex(URL_LIST).match()) {
-            page.addTargetRequests(page.getHtml().xpath("//div[@class=\"articleList\"]").links().regex(URL_POST).all());
-            page.addTargetRequests(page.getHtml().links().regex(URL_LIST).all());
+            page.addTargetPage(page.getHtml().xpath("//div[@class=\"articleList\"]").links().regex(URL_POST).all());
+            page.addTargetPage(page.getHtml().links().regex(URL_LIST).all());
+            page.setSkip(true);
             //文章页
         } else {
-            page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2"));
-            page.putField("content", page.getHtml().xpath("//div[@id='articlebody']//div[@class='articalContent']"));
+            page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2/text()"));
+            page.putField("tag", page.getHtml().xpath("//h3/a/text()"));
             page.putField("date",
-                    page.getHtml().xpath("//div[@id='articlebody']//span[@class='time SG_txtc']").regex("\\((.*)\\)"));
+                    page.getHtml().xpath("//div[@id='articlebody']//span[@class='time SG_txtc']/text()").regex("\\((.*)\\)"));
         }
     }
 
