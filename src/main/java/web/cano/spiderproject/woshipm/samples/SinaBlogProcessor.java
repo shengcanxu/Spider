@@ -31,10 +31,10 @@ public class SinaBlogProcessor implements PageProcessor {
             page.setSkip(true);
             //文章页
         } else {
-            page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2/text()"));
-            page.putField("tag", page.getHtml().xpath("//h3/a/text()"));
+            page.putField("title", page.getHtml().xpath("//div[@class='articalTitle']/h2/text()").toString());
+            page.putField("tag", page.getHtml().xpath("//h3/a/text()").toString());
             page.putField("date",
-                    page.getHtml().xpath("//div[@id='articlebody']//span[@class='time SG_txtc']/text()").regex("\\((.*)\\)"));
+                    page.getHtml().xpath("//div[@id='articlebody']//span[@class='time SG_txtc']/text()").regex("\\((.*)\\)").toString());
         }
     }
 

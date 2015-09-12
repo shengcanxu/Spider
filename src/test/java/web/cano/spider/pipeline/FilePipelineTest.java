@@ -34,7 +34,7 @@ public class FilePipelineTest {
     }
     @Test
     public void testProcess() {
-        FilePipeline filePipeline = new FilePipeline();
+        //FilePipeline filePipeline = new FilePipeline();
         //TODO: fix the test case here
         //filePipeline.process(resultItems, task);
 

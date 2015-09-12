@@ -23,9 +23,14 @@ public class ConsolePipeline implements Pipeline {
         if(page.isSkip()) return;
         PageItems pageItems = page.getPageItems();
 
+        String json = page.toJson();
+        logger.info(json);
+
+        Page page2 = Page.fromJson(json);
+
         StringBuilder sb = new StringBuilder();
         sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");
-        for (Map.Entry<String, Object> entry : pageItems.getAllItems().entrySet()) {
+        for (Map.Entry<String, String> entry : pageItems.getAllItems().entrySet()) {
             sb.append(entry.getKey() + ":\t" + entry.getValue() + "\n");
         }
         logger.info(sb.toString());

@@ -1,5 +1,8 @@
 package web.cano.spider;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.util.LinkedHashMap;
 import java.util.Map;
 
@@ -11,10 +14,11 @@ import java.util.Map;
  * @see web.cano.spider.pipeline.Pipeline
  */
 public class PageItems {
+    Logger logger = LoggerFactory.getLogger(getClass());
 
     public static enum Type {INT,STRING,TEXT,DATETIME}
 
-    private Map<String, Object> items = new LinkedHashMap<String, Object>();
+    private Map<String, String> items = new LinkedHashMap<String, String>();
 
     private Map<String, Type> fields = new LinkedHashMap<String, Type>();
 
@@ -42,11 +46,11 @@ public class PageItems {
         return o;
     }
 
-    public Map<String, Object> getAllItems() {
+    public Map<String, String> getAllItems() {
         return items;
     }
 
-    public PageItems putItem(String itemName, Object value) {
+    public PageItems putItem(String itemName, String value) {
         items.put(itemName, value);
         return this;
     }
@@ -77,10 +81,38 @@ public class PageItems {
         this.page = page;
     }
 
-    @Override
-    public String toString() {
-        return "ResultItems{" +
-                "items=" + items +
-                '}';
+    public String toJson() {
+        StringBuilder json = new StringBuilder();
+        json.append("<$PageItems> <$items>");
+        for(Map.Entry<String,String> entry : items.entrySet()){
+            json.append("<$" + entry.getKey() + ">" + entry.getValue() + "<$/" + entry.getKey() + ">");
+        }
+        json.append("<$/items><$fields>");
+
+        for(Map.Entry<String, Type> entry : fields.entrySet()){
+            json.append("<$" + entry.getKey() + ">" + entry.getValue() + "<$/" + entry.getKey() + ">");
+        }
+        json.append("<$/fields><$/PageItems>");
+
+        return json.toString();
+    }
+
+    public static PageItems fromJson(String json, Page page){
+        String items = json.substring(json.indexOf("<$items>")+8, json.lastIndexOf("<$/items>"));
+        String fields = json.substring(json.indexOf("<$fields>")+8, json.lastIndexOf("<$/fields>"));
+
+        PageItems pageItems = new PageItems(page);
+        String[] itemList = items.split("<\\$/");
+        for(int i=0; i<itemList.length-1; i++){
+            String[] list = itemList[i].split("<\\$")[1].split(">");
+            pageItems.putItem(list[0], list[1]);
+        }
+        String[] fieldList = fields.split("<\\$/");
+        for(int i=0; i<fieldList.length-1; i++){
+            String[] list = fieldList[i].split("<\\$")[1].split(">");
+            //TODO: change the type here
+            pageItems.putField(list[0],Type.STRING);
+        }
+        return pageItems;
     }
 }

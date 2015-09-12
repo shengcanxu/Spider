@@ -1,5 +1,6 @@
 package web.cano.spider;
 
+import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import web.cano.spider.selector.Html;
 import web.cano.spider.selector.Json;
@@ -118,7 +119,7 @@ public class Page {
      * @param key
      * @param field
      */
-    public void putField(String key, Object field) {
+    public void putField(String key, String field) {
         pageItems.putItem(key, field);
     }
 
@@ -264,18 +265,44 @@ public class Page {
         return this;
     }
 
+    public void setPageItems(PageItems pageItems) {
+        this.pageItems = pageItems;
+    }
+
     public String toJson() {
-        return "Page{" +
-                "request=" + request +
-                ", resultItems=" + pageItems +
-                ", rawText='" + rawText + '\'' +
-                ", url=" + url +
-                ", statusCode=" + statusCode +
-                ", targetPages=" + targetPages +
-                '}';
+        StringBuilder json = new StringBuilder();
+        json.append("<$Page>");
+        json.append("<$fatherPage>" + fatherPage.getUrl() + "<$/fatherPage>");
+        json.append("<$url>" + this.url + "<$/url>");
+        json.append("<$statusCode>" + statusCode + "<$/statusCode>") ;
+        json.append("<$cycleTriedTimes>" + cycleTriedTimes + "<$/cycleTriedTimes>");
+        json.append("<$depth>" + depth + "<$/depth>");
+        json.append("<$skip>" + skip + "<$/skip>" );
+        json.append("<$isRefresh>" + isRefresh + "<$/isRefresh>");
+        json.append(pageItems.toJson());
+        json.append("<$/Page>");
+        return json.toString();
     }
 
     public static Page fromJson(String json){
-        return new Page();
+        String fatherPageUrl = json.substring(json.indexOf("<$fatherPage>")+13, json.lastIndexOf("<$/fatherPage>"));
+        String url = json.substring(json.indexOf("<$url>")+6, json.lastIndexOf("<$/url>"));
+        int statusCode = Integer.parseInt(json.substring(json.indexOf("<$statusCode>") + 13, json.lastIndexOf("<$/statusCode>")));
+        int cycleTriedTimes = Integer.parseInt(json.substring(json.indexOf("<$cycleTriedTimes>") + 18, json.lastIndexOf("<$/cycleTriedTimes>")));
+        int depth = Integer.parseInt(json.substring(json.indexOf("<$depth>")+8, json.lastIndexOf("<$/depth>")));
+        boolean skip = Boolean.parseBoolean(json.substring(json.indexOf("<$skip>")+7, json.lastIndexOf("<$/skip>")));
+        boolean isRefresh = Boolean.parseBoolean(json.substring(json.indexOf("<$isRefresh>")+12, json.lastIndexOf("<$/isRefresh>")));
+        String pageItemsString = json.substring(json.indexOf("<$PageItems>"), json.lastIndexOf("<$/PageItems>")+13);
+
+        Page fatherPage = new Page(fatherPageUrl);
+        Page page = new Page(url,fatherPage);
+        page.setStatusCode(statusCode);
+        page.setCycleTriedTimes( cycleTriedTimes);
+        page.setDepth(depth);
+        page.setSkip(skip);
+        page.setRefresh(isRefresh);
+        PageItems pageItems = PageItems.fromJson(pageItemsString,page);
+        page.setPageItems(pageItems);
+        return page;
     }
 }
