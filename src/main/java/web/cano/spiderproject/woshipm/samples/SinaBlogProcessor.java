@@ -4,6 +4,7 @@ import web.cano.spider.Page;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.processor.PageProcessor;
+import web.cano.spider.scheduler.RedisScheduler;
 import web.cano.spider.selector.PlainText;
 
 /**
@@ -44,7 +45,9 @@ public class SinaBlogProcessor implements PageProcessor {
     }
 
     public static void main(String[] args) {
-        Spider.create(new SinaBlogProcessor())
+        PageProcessor processor = new SinaBlogProcessor();
+        Spider.create(processor)
+                .setScheduler(new RedisScheduler("127.0.0.1",processor.getSite()))
                 .addStartPage(new Page("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
                 .run();
     }

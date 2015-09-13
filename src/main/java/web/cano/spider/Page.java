@@ -272,7 +272,8 @@ public class Page {
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("<$Page>");
-        json.append("<$fatherPage>" + fatherPage.getUrl() + "<$/fatherPage>");
+        String fatherUrl = fatherPage == null ? "" : fatherPage.getUrl();
+        json.append("<$fatherPage>" + fatherUrl + "<$/fatherPage>");
         json.append("<$url>" + this.url + "<$/url>");
         json.append("<$statusCode>" + statusCode + "<$/statusCode>") ;
         json.append("<$cycleTriedTimes>" + cycleTriedTimes + "<$/cycleTriedTimes>");

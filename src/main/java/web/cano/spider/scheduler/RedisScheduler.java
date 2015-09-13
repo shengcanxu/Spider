@@ -30,10 +30,13 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
 
     private boolean startOver = false;
 
+    //存储将要爬取的pages
     private static final String QUEUE_PREFIX = "queue_";
 
-    private static final String QUEUE_PREFIX_DUPICATE = "queue_dupicate_";
+    //存储正在爬取的pages
+    private static final String MAP_PREFIX = "map_";
 
+    //存储已经爬过的urls
     private static final String SET_PREFIX = "set_";
 
     private RedisScheduler() {
@@ -63,7 +66,7 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
             if(startOver){
                 jedis.del(getSetKey(task));
                 jedis.del(getQueueKey(task));
-                jedis.del(getDupicateQueueKey(task));
+                jedis.del(getMapKey(task));
                 startOver = false;
                 logger.info("remove redis queue and start over parsing.");
             }
@@ -99,11 +102,12 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
         Jedis jedis = pool.getResource();
         try{
             String json = jedis.lpop(getQueueKey(task));
-            jedis.rpush(getDupicateQueueKey(task), json);
-
             if (json == null){
                 return null;
             }
+
+            String url = json.substring(json.indexOf("<$url>")+6,json.lastIndexOf("<$/url>"));
+            jedis.hset(getMapKey(task),url,json);
             Page page = Page.fromJson(json);
             return page;
         }finally {
@@ -113,22 +117,14 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
 
     @Override
     public void completeParse(Page page, Task task) {
-//        Jedis jedis = pool.getResource();
-//
-//        try{
-//            HttpHost httpHost = request.getProxy();
-//            int statusCode = request.getStatusCode();
-//            request.setProxy(null);
-//            request.setStatusCode(0);
-//            String json = gson.toJson(request);
-//            request.setProxy(httpHost);
-//            request.setStatusCode(statusCode);
-//
-//            jedis.lrem(getDupicateQueueKey(task),1,json);
-//
-//        }finally {
-//            pool.returnResource(jedis);
-//        }
+        Jedis jedis = pool.getResource();
+
+        try{
+            jedis.hdel(getMapKey(task),page.getUrl());
+
+        }finally {
+            pool.returnResource(jedis);
+        }
     }
 
     protected String getSetKey(Task task) {
@@ -139,8 +135,8 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
         return QUEUE_PREFIX + ((Spider) task).getUUID();
     }
 
-    protected String getDupicateQueueKey(Task task) {
-        return QUEUE_PREFIX_DUPICATE + ((Spider) task).getUUID();
+    protected String getMapKey(Task task) {
+        return MAP_PREFIX + ((Spider) task).getUUID();
     }
 
     @Override
@@ -170,9 +166,8 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
         Jedis jedis = pool.getResource();
         List<Page> list = new ArrayList<Page>();
         try{
-            String key = getDupicateQueueKey(task);
-            List<String> requests = jedis.lrange((key), 0, jedis.llen(key));
-            for(String json : requests){
+            List<String> jsons = jedis.hvals(getMapKey(task));
+            for(String json : jsons){
                 Page page = Page.fromJson(json);
                 list.add(page);
             }
