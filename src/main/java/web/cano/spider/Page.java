@@ -1,6 +1,5 @@
 package web.cano.spider;
 
-import com.alibaba.fastjson.JSON;
 import org.apache.commons.lang3.StringUtils;
 import web.cano.spider.selector.Html;
 import web.cano.spider.selector.Json;
@@ -119,8 +118,15 @@ public class Page {
      * @param key
      * @param field
      */
-    public void putField(String key, String field) {
+    public void putItem(String key, String field) {
         pageItems.putItem(key, field);
+    }
+
+    /**
+     * 存储字段属性
+     */
+    public void putField(String fieldName, PageItems.PageItemsType pageItemsType){
+        pageItems.putField(fieldName,pageItemsType);
     }
 
     /**
@@ -159,10 +165,8 @@ public class Page {
 
     /**
      * add urls to fetch
-     *
-     * @param pageUrls
      */
-    public void addTargetPage(List<String> pageUrls) {
+    public void addTargetPages(List<String> pageUrls) {
         synchronized (targetPages) {
             for (String s : pageUrls) {
                 if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
@@ -174,6 +178,19 @@ public class Page {
         }
     }
 
+    /**
+     * add urls to fetch
+     */
+    public void addTargetPage(String url){
+        synchronized (targetPages){
+            if(StringUtils.isBlank(url) || url.equals("#") || url.startsWith("javascript:")){
+                return;
+            }
+            url = UrlUtils.canonicalizeUrl(url, url.toString());
+            targetPages.add(new Page(url, this));
+        }
+    }
+
 
     /**
      * add pages to fetch
@@ -182,12 +199,14 @@ public class Page {
      */
     public void addTargetPage(Page page) {
         synchronized (targetPages) {
+            page.setFatherPage(this);
             targetPages.add(page);
         }
     }
 
     public void addNextPage(Page page){
         synchronized (nextPages) {
+            page.setFatherPage(this);
             nextPages.add(page);
         }
     }

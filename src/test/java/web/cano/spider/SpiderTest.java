@@ -99,12 +99,12 @@ public class SpiderTest {
             }
 
             @Override
-            public void saveQueue(Task task) {
+            public void saveUrlSet(Task task) {
 
             }
 
             @Override
-            public void recoverQueue(Task task) {
+            public void recoverUrlSet(Task task) {
 
             }
         }).thread(10);

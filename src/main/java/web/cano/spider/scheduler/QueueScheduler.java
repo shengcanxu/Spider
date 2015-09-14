@@ -42,12 +42,12 @@ public class QueueScheduler extends DuplicateRemovedScheduler implements Monitor
     }
 
     @Override
-    public void saveQueue(Task task) {
+    public void saveUrlSet(Task task) {
 
     }
 
     @Override
-    public void recoverQueue(Task task) {
+    public void recoverUrlSet(Task task) {
 
     }
 

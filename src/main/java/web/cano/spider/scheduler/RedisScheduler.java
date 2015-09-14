@@ -10,9 +10,12 @@ import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.Task;
 import web.cano.spider.scheduler.component.DuplicateRemover;
+import web.cano.spider.utils.BaseDAO;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Use Redis as url scheduler for distributed crawlers.<br>
@@ -38,6 +41,8 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
 
     //存储已经爬过的urls
     private static final String SET_PREFIX = "set_";
+
+    private static final String URLSET_PROFIX = "_urlset";
 
     private RedisScheduler() {
 
@@ -139,6 +144,10 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
         return MAP_PREFIX + ((Spider) task).getUUID();
     }
 
+    protected String getUrlSetKey(Task task){
+        return ((Spider) task).getUUID() + URLSET_PROFIX;
+    }
+
     @Override
     public int getLeftRequestsCount(Task task) {
         Jedis jedis = pool.getResource();
@@ -178,60 +187,50 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
     }
 
     @Override
-    public void saveQueue(Task task) {
-//        Jedis jedis = pool.getResource();
-//        BaseDAO dao = BaseDAO.getInstance("cano");
-//
-//        //create table
-//        String tableName;
-//        if(task instanceof ModelSpider){
-//            tableName = ((ModelSpider) task).getPageModel().getClazz().getSimpleName() + "UrlSet";
-//        }else{
-//            tableName = task.getUUID() + "UrlSet";
-//        }
-//        String sql = "DROP TABLE IF EXISTS `" + tableName + "`;";
-//        dao.executeUpdate(sql);
-//        logger.info("drop table " + tableName + " and re-recreate again.");
-//        logger.info("creating table " + tableName);
-//        sql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (`id` int(11) NOT NULL AUTO_INCREMENT,`url` varchar(1024) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
-//        dao.executeUpdate(sql);
-//
-//        //store values
-//        logger.info("storing parsed urls.");
-//        try{
-//            Set<String> urlSet = jedis.smembers(getSetKey(task));
-//            for(String url : urlSet){
-//                logger.info(url);
-//                sql = "INSERT INTO `" + tableName + "` (`id`,`url`) VALUES (NULL,'" + url + "')";
-//                dao.executeUpdate(sql);
-//            }
-//        }finally {
-//            pool.returnResource(jedis);
-//        }
+    public void saveUrlSet(Task task) {
+        Jedis jedis = pool.getResource();
+        BaseDAO dao = BaseDAO.getInstance("canospider");
+
+        //create table
+        String tableName = getUrlSetKey(task);
+        String sql = "DROP TABLE IF EXISTS `" + tableName + "`;";
+        dao.executeUpdate(sql);
+        logger.info("drop table " + tableName + " and re-recreate again.");
+        logger.info("creating table " + tableName);
+        sql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (`id` int(11) NOT NULL AUTO_INCREMENT,`url` varchar(1024) NULL, PRIMARY KEY (`id`)) ENGINE=InnoDB;";
+        dao.executeUpdate(sql);
+
+        //store values
+        logger.info("storing parsed urls.");
+        try{
+            Set<String> urlSet = jedis.smembers(getSetKey(task));
+            for(String url : urlSet){
+                logger.info(url);
+                sql = "INSERT INTO `" + tableName + "` (`id`,`url`) VALUES (NULL,'" + url + "')";
+                dao.executeUpdate(sql);
+            }
+        }finally {
+            pool.returnResource(jedis);
+        }
     }
 
     @Override
-    public void recoverQueue(Task task) {
-//        BaseDAO dao = BaseDAO.getInstance("cano");
-//        Jedis jedis = pool.getResource();
-//
-//        //get urls
-//        String tableName;
-//        if(task instanceof ModelSpider){
-//            tableName = ((ModelSpider) task).getPageModel().getClazz().getSimpleName() + "UrlSet";
-//        }else{
-//            tableName = task.getUUID() + "UrlSet";
-//        }
-//
-//        String sql = "select url from " + tableName;
-//        try {
-//            List<Map<String,Object>> list = dao.executeQuery(sql,null,null);
-//            for (Map<String, Object> map : list) {
-//                String url = (String) map.get("url");
-//                jedis.sadd(getSetKey(task), url);
-//            }
-//        }finally {
-//            pool.returnResource(jedis);
-//        }
+    public void recoverUrlSet(Task task) {
+        BaseDAO dao = BaseDAO.getInstance("canospider");
+        Jedis jedis = pool.getResource();
+
+        //get urls
+        String tableName = getUrlSetKey(task);
+
+        String sql = "select url from " + tableName;
+        try {
+            List<Map<String,Object>> list = dao.executeQuery(sql,null,null);
+            for (Map<String, Object> map : list) {
+                String url = (String) map.get("url");
+                jedis.sadd(getSetKey(task), url);
+            }
+        }finally {
+            pool.returnResource(jedis);
+        }
     }
 }

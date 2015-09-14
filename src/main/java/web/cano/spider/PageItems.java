@@ -16,11 +16,11 @@ import java.util.Map;
 public class PageItems {
     Logger logger = LoggerFactory.getLogger(getClass());
 
-    public static enum Type {INT,STRING,TEXT,DATETIME}
+    public static enum PageItemsType {INT,STRING,TEXT,DATETIME}
 
     private Map<String, String> items = new LinkedHashMap<String, String>();
 
-    private Map<String, Type> fields = new LinkedHashMap<String, Type>();
+    private Map<String, PageItemsType> fields = new LinkedHashMap<String, PageItemsType>();
 
     private Page page;
 
@@ -55,21 +55,21 @@ public class PageItems {
         return this;
     }
 
-    public Type getField(String fieldName){
-        Type type = fields.get(fieldName);
-        if(type == null){
-            return Type.STRING;
+    public PageItemsType getField(String fieldName){
+        PageItemsType pageItemsType = fields.get(fieldName);
+        if(pageItemsType == null){
+            return PageItemsType.STRING;
         }else{
-            return type;
+            return pageItemsType;
         }
     }
 
-    public Map<String, Type> getAllFields(){
+    public Map<String, PageItemsType> getAllFields(){
         return fields;
     }
 
-    public PageItems putField(String fieldName, Type type){
-        fields.put(fieldName, type);
+    public PageItems putField(String fieldName, PageItemsType pageItemsType){
+        fields.put(fieldName, pageItemsType);
         return this;
     }
 
@@ -89,7 +89,7 @@ public class PageItems {
         }
         json.append("<$/items><$fields>");
 
-        for(Map.Entry<String, Type> entry : fields.entrySet()){
+        for(Map.Entry<String, PageItemsType> entry : fields.entrySet()){
             json.append("<$" + entry.getKey() + ">" + entry.getValue() + "<$/" + entry.getKey() + ">");
         }
         json.append("<$/fields><$/PageItems>");
@@ -111,7 +111,7 @@ public class PageItems {
         for(int i=0; i<fieldList.length-1; i++){
             String[] list = fieldList[i].split("<\\$")[1].split(">");
             //TODO: change the type here
-            pageItems.putField(list[0],Type.STRING);
+            pageItems.putField(list[0], PageItemsType.STRING);
         }
         return pageItems;
     }

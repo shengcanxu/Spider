@@ -106,7 +106,7 @@ public class Spider implements Runnable, Task {
 
     private int emptySleepTime = 30000;
 
-    private boolean recoverQueue = false;
+    private boolean recoverUrlSet = false;
 
     /**
      * create a spider with pageProcessor.
@@ -207,9 +207,8 @@ public class Spider implements Runnable, Task {
         if (downloader == null) {
             this.downloader = new HttpClientDownloader();
         }
-        if (pipelines.isEmpty()) {
-            pipelines.add(new ConsolePipeline());
-        }
+        pipelines.add(new ConsolePipeline());
+
         downloader.setThread(threadNum);
         if (threadPool == null || threadPool.isShutdown()) {
             if (executorService != null && !executorService.isShutdown()) {
@@ -295,13 +294,13 @@ public class Spider implements Runnable, Task {
     }
 
     protected void preRun(){
-        if(recoverQueue) {
-            this.scheduler.recoverQueue(this);
+        if(recoverUrlSet) {
+            this.scheduler.recoverUrlSet(this);
         }
     }
 
     protected void postRun(){
-        this.scheduler.saveQueue(this);
+        this.scheduler.saveUrlSet(this);
     }
 
     protected void onError(Request request) {
@@ -654,8 +653,8 @@ public class Spider implements Runnable, Task {
         this.emptySleepTime = emptySleepTime;
     }
 
-    public Spider setRecoverQueue(boolean recoverQueue) {
-        this.recoverQueue = recoverQueue;
+    public Spider setRecoverUrlSet(boolean recoverUrlSet) {
+        this.recoverUrlSet = recoverUrlSet;
         return this;
     }
 }

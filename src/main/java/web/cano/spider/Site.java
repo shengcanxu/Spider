@@ -58,6 +58,11 @@ public class Site {
      */
     private boolean getContent = true;
 
+    /**
+     * 爬取到多个结果后的分隔符
+     */
+    private String multiValueSeparator = "@#$";
+
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<Integer>();
 
     private Set<Integer> acceptStatCode = DEFAULT_STATUS_CODE_SET;
@@ -212,6 +217,14 @@ public class Site {
     public Site setTimeOut(int timeOut) {
         this.timeOut = timeOut;
         return this;
+    }
+
+    public String getMultiValueSeparator() {
+        return multiValueSeparator;
+    }
+
+    public void setMultiValueSeparator(String multiValueSeparator) {
+        this.multiValueSeparator = multiValueSeparator;
     }
 
     /**

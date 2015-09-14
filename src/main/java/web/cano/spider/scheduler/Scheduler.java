@@ -46,12 +46,12 @@ public interface Scheduler {
     /**
      * save to queue to db
      */
-    public void saveQueue(Task task);
+    public void saveUrlSet(Task task);
 
     /**
      * recover queue from db
      * @param task
      */
-    public void recoverQueue(Task task);
+    public void recoverUrlSet(Task task);
 
 }
