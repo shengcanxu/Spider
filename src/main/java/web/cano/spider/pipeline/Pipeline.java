@@ -10,7 +10,6 @@ import web.cano.spider.Task;
  * @author code4crafter@gmail.com <br>
  * @since 0.1.0
  * @see ConsolePipeline
- * @see FilePipeline
  */
 public interface Pipeline {
 

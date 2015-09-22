@@ -1,5 +1,6 @@
-package web.cano.spiderproject.woshipm.samples;
+package web.cano.spider.testsamples;
 
+import org.junit.Test;
 import web.cano.spider.Page;
 import web.cano.spider.PageItems;
 import web.cano.spider.Site;
@@ -54,11 +55,11 @@ public class SinaBlogProcessor extends DefaultPageProcessor {
         return site;
     }
 
-    public static void main(String[] args) {
-        PageProcessor processor = new SinaBlogProcessor();
+    @Test
+    public void testEnableJsoupHtmlEntityEscape() throws Exception{
+    PageProcessor processor = new SinaBlogProcessor();
         Spider.create(processor)
-                .setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),true))
-                //.setRecoverUrlSet(true)
+                .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
                 .addPipeline(new MysqlPipeline(true))
                 .addStartPage(new Page("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
                 .run();

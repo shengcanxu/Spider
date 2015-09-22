@@ -25,5 +25,8 @@
         <module name="spider" />
       </profile>
     </annotationProcessing>
+    <bytecodeTargetLevel>
+      <module name="spider" target="1.6" />
+    </bytecodeTargetLevel>
   </component>
 </project>
