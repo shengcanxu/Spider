@@ -27,9 +27,7 @@ import web.cano.spider.Task;
 import web.cano.spider.utils.HttpConstant;
 import web.cano.spider.utils.UrlUtils;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -73,13 +71,12 @@ public class HttpClientDownloader extends AbstractDownloader {
         File file = new File( this.getClass().getClassLoader().getResource(request.getPage().getUrl()).getFile() );
         StringBuilder sb = new StringBuilder();
         try {
-            FileInputStream fis = new FileInputStream(file);
-            byte[] b = new byte[1024];
-            int len = 0;
-            while((len = fis.read(b)) > 0){
-                sb.append(new String(b,0,len));
+            BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line);
             }
-            fis.close();
+            br.close();
         }catch(Exception e){
             e.printStackTrace();
         }

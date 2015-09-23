@@ -657,4 +657,8 @@ public class Spider implements Runnable, Task {
         this.recoverUrlSet = recoverUrlSet;
         return this;
     }
+
+    public PageProcessor getPageProcessor() {
+        return pageProcessor;
+    }
 }
