@@ -146,7 +146,11 @@ public class Page {
      */
     public Html getHtml() {
         if (html == null) {
-            html = new Html(UrlUtils.fixAllRelativeHrefs(rawText, request.getUrl()));
+            if(isTest){
+                html = new Html(rawText);
+            }else {
+                html = new Html(UrlUtils.fixAllRelativeHrefs(rawText, request.getUrl()));
+            }
         }
         return html;
     }
@@ -182,7 +186,7 @@ public class Page {
                 if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
                     continue;
                 }
-                s = UrlUtils.canonicalizeUrl(s, url.toString());
+                if(!isTest) s = UrlUtils.canonicalizeUrl(s, url.toString());
                 targetPages.add(new Page(s,this));
             }
         }

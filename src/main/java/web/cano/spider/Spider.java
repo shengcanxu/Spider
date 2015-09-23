@@ -423,7 +423,9 @@ public class Spider implements Runnable, Task {
 
     public Spider addPagesToScheduler(List<Page> pages){
         for(int i=0; i<pages.size(); i++){
-            scheduler.push(pages.get(i),this);
+            if(!pages.get(i).getFatherPage().isTest()) {
+                scheduler.push(pages.get(i), this);
+            }
         }
 
         //TODO:在scheduler里面实现深度优先还是宽度优先

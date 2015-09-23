@@ -1,14 +1,16 @@
 package web.cano.spider.testsamples;
 
 import org.junit.Test;
-import web.cano.spider.*;
+import web.cano.spider.Page;
+import web.cano.spider.Site;
+import web.cano.spider.Spider;
 import web.cano.spider.pipeline.TestCallabckPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
 
-import javax.annotation.processing.Processor;
 import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -55,7 +57,6 @@ public class ParseUrlTest extends DefaultPageProcessor implements TestableProces
         TestableProcessor testableProcessor = (TestableProcessor) processor;
         List<Page> pages = testableProcessor.getPage().getTargetPages();
         assertThat(pages.size()).isEqualTo(50);
-        assertThat(pages.size()).isEqualTo(5);
         assertThat(pages.get(0).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
         assertThat(pages.get(9).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100msy6.html");
         assertThat(pages.get(49).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100g8cy.html");
