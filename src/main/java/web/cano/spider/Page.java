@@ -14,7 +14,6 @@ import java.util.List;
  * Main method：                                               <br>
  * {@link #getUrl()} get url of current page                   <br>
  * {@link #getHtml()}  get content of current page                 <br>
- * {@link #putField(String, Object)}  save extracted result            <br>
  * {@link #getPageItems()} get extract results to be used in {@link web.cano.spider.pipeline.Pipeline}<br><br>
  *
  * @author code4crafter@gmail.com <br>
@@ -50,15 +49,25 @@ public class Page {
      */
     private boolean isRefresh = false;
 
+    private boolean isTest = false;
+
     private Page() {
 
     }
 
     public Page(String  url){
-        this(url,null);
+        this(url,null,false);
+    }
+
+    public Page(String url, boolean isTest){
+        this(url,null,isTest);
     }
 
     public Page(String url, Page fatherPage){
+        this(url,fatherPage,false);
+    }
+
+    private Page(String url, Page fatherPage,boolean isTest){
         if (StringUtils.isBlank(url) || url.equals("#")) {
             this.url = null;
         }else {
@@ -66,6 +75,7 @@ public class Page {
         }
 
         this.fatherPage = fatherPage;
+        this.isTest = isTest;
     }
 
     public int getCycleTriedTimes() {
@@ -265,6 +275,10 @@ public class Page {
     public Page setRawText(String rawText) {
         this.rawText = rawText;
         return this;
+    }
+
+    public boolean isTest() {
+        return isTest;
     }
 
     public Page getFatherPage() {

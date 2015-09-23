@@ -27,6 +27,8 @@ import web.cano.spider.Task;
 import web.cano.spider.utils.HttpConstant;
 import web.cano.spider.utils.UrlUtils;
 
+import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
@@ -67,8 +69,34 @@ public class HttpClientDownloader extends AbstractDownloader {
         return httpClient;
     }
 
+    private Page getTestPage(Request request){
+        File file = new File( this.getClass().getClassLoader().getResource(request.getPage().getUrl()).getFile() );
+        StringBuilder sb = new StringBuilder();
+        try {
+            FileInputStream fis = new FileInputStream(file);
+            byte[] b = new byte[1024];
+            int len = 0;
+            while((len = fis.read(b)) > 0){
+                sb.append(new String(b,0,len));
+            }
+            fis.close();
+        }catch(Exception e){
+            e.printStackTrace();
+        }
+
+        request.getPage().setRawText(sb.toString());
+        request.getPage().setUrl(request.getPage().getUrl());
+        request.getPage().setRequest(request);
+        request.getPage().setStatusCode(200);
+        return request.getPage();
+    }
+
     @Override
     public Page download(Request request, Task task) {
+        if(request.getPage().isTest()){
+            return getTestPage(request);
+        }
+
         Site site = null;
         if (task != null) {
             site = task.getSite();

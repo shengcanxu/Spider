@@ -108,9 +108,6 @@ public class Spider implements Runnable, Task {
 
     private boolean recoverUrlSet = false;
 
-    //判断是不是做测试而已
-    private boolean isTest = false;
-
     /**
      * create a spider with pageProcessor.
      *
@@ -119,18 +116,7 @@ public class Spider implements Runnable, Task {
      * @see PageProcessor
      */
     public static Spider create(PageProcessor pageProcessor) {
-        return new Spider(pageProcessor,false);
-    }
-
-    /**
-     * create a spider with pageProcessor for Test only.
-     *
-     * @param pageProcessor
-     * @return new spider
-     * @see PageProcessor
-     */
-    public static Spider createForTest(PageProcessor pageProcessor) {
-        return new Spider(pageProcessor,true);
+        return new Spider(pageProcessor);
     }
 
     /**
@@ -138,11 +124,10 @@ public class Spider implements Runnable, Task {
      *
      * @param pageProcessor
      */
-    private Spider(PageProcessor pageProcessor,boolean isTest) {
+    private Spider(PageProcessor pageProcessor) {
         this.pageProcessor = pageProcessor;
         this.site = pageProcessor.getSite();
         this.uuid = pageProcessor.getClass().getSimpleName();
-        this.isTest = isTest;
     }
 
     /**
@@ -671,9 +656,5 @@ public class Spider implements Runnable, Task {
     public Spider setRecoverUrlSet(boolean recoverUrlSet) {
         this.recoverUrlSet = recoverUrlSet;
         return this;
-    }
-
-    public boolean isTest() {
-        return isTest;
     }
 }

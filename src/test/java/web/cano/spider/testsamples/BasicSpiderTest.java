@@ -5,16 +5,14 @@ import web.cano.spider.Page;
 import web.cano.spider.PageItems;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
-import web.cano.spider.pipeline.MysqlPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.PageProcessorItem;
-import web.cano.spider.scheduler.RedisScheduler;
 
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class SinaBlogProcessor extends DefaultPageProcessor {
+public class BasicSpiderTest extends DefaultPageProcessor {
 
     public static final String URL_LIST = "http://blog\\.sina\\.com\\.cn/s/articlelist_1487828712_0_\\d+\\.html";
 
@@ -57,11 +55,9 @@ public class SinaBlogProcessor extends DefaultPageProcessor {
 
     @Test
     public void testEnableJsoupHtmlEntityEscape() throws Exception{
-    PageProcessor processor = new SinaBlogProcessor();
+        PageProcessor processor = new BasicSpiderTest();
         Spider.create(processor)
-                .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
-                .addPipeline(new MysqlPipeline(true))
-                .addStartPage(new Page("http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html"))
+                .addStartPage(new Page("blog_sina.html",true))
                 .run();
     }
 }
