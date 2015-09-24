@@ -285,6 +285,10 @@ public class Page {
         return isTest;
     }
 
+    private void setTest(boolean isTest) {
+        this.isTest = isTest;
+    }
+
     public Page getFatherPage() {
         return fatherPage;
     }
@@ -317,6 +321,7 @@ public class Page {
         json.append("<$depth>" + depth + "<$/depth>");
         json.append("<$skip>" + skip + "<$/skip>" );
         json.append("<$isRefresh>" + isRefresh + "<$/isRefresh>");
+        json.append("<$isTest>" + isTest + "<$/isTest>");
         json.append(pageItems.toJson());
         json.append("<$/Page>");
         return json.toString();
@@ -328,17 +333,19 @@ public class Page {
         int statusCode = Integer.parseInt(json.substring(json.indexOf("<$statusCode>") + 13, json.lastIndexOf("<$/statusCode>")));
         int cycleTriedTimes = Integer.parseInt(json.substring(json.indexOf("<$cycleTriedTimes>") + 18, json.lastIndexOf("<$/cycleTriedTimes>")));
         int depth = Integer.parseInt(json.substring(json.indexOf("<$depth>")+8, json.lastIndexOf("<$/depth>")));
-        boolean skip = Boolean.parseBoolean(json.substring(json.indexOf("<$skip>")+7, json.lastIndexOf("<$/skip>")));
+        boolean skip = Boolean.parseBoolean(json.substring(json.indexOf("<$skip>") + 7, json.lastIndexOf("<$/skip>")));
         boolean isRefresh = Boolean.parseBoolean(json.substring(json.indexOf("<$isRefresh>")+12, json.lastIndexOf("<$/isRefresh>")));
+        boolean isTest = Boolean.parseBoolean(json.substring(json.indexOf("<$isTest>")+9, json.lastIndexOf("<$/isTest>")));
         String pageItemsString = json.substring(json.indexOf("<$PageItems>"), json.lastIndexOf("<$/PageItems>")+13);
 
         Page fatherPage = new Page(fatherPageUrl);
         Page page = new Page(url,fatherPage);
         page.setStatusCode(statusCode);
-        page.setCycleTriedTimes( cycleTriedTimes);
+        page.setCycleTriedTimes(cycleTriedTimes);
         page.setDepth(depth);
         page.setSkip(skip);
         page.setRefresh(isRefresh);
+        page.setTest(isTest);
         PageItems pageItems = PageItems.fromJson(pageItemsString,page);
         page.setPageItems(pageItems);
         return page;
