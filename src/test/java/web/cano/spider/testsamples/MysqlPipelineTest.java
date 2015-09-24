@@ -9,7 +9,7 @@ import web.cano.spider.pipeline.MysqlPipeline;
 import web.cano.spider.pipeline.TestCallabckPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
-import web.cano.spider.processor.PageProcessorItem;
+import web.cano.spider.PageItem;
 import web.cano.spider.processor.TestableProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
 import web.cano.spider.utils.BaseDAO;
@@ -37,15 +37,15 @@ public class MysqlPipelineTest extends DefaultPageProcessor implements TestableP
 
     @Override
     public void process(Page page) {
-        PageProcessorItem title = new PageProcessorItem("title", PageItems.PageItemsType.STRING,true,false);
+        PageItem title = new PageItem("title", PageItem.PageItemType.STRING,true,false);
         title = extratBy(page,"//div[@class='articalTitle']/h2/text()",PageProcessType.XPath,title);
         putItem(page, title);
 
-        PageProcessorItem tag = new PageProcessorItem("tag",PageItems.PageItemsType.STRING,true,false);
+        PageItem tag = new PageItem("tag",PageItem.PageItemType.STRING,true,false);
         tag = extratBy(page,"//h3/a/text()",PageProcessType.XPath,tag);
         putItem(page, tag);
 
-        PageProcessorItem date = new PageProcessorItem("date", PageItems.PageItemsType.STRING,true, false);
+        PageItem date = new PageItem("date", PageItem.PageItemType.STRING,true, false);
         date = extratBy(page, "//div[@id='articlebody']//span[@class='time SG_txtc']/text()", PageProcessType.XPath,date);
         date = formatValue(date,"\\((.*)\\)");
         putItem(page, date);

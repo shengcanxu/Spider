@@ -3,6 +3,7 @@ package web.cano.spider.pipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
+import web.cano.spider.PageItem;
 import web.cano.spider.PageItems;
 import web.cano.spider.Task;
 
@@ -30,8 +31,8 @@ public class ConsolePipeline implements Pipeline {
 
         StringBuilder sb = new StringBuilder();
         sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");
-        for (Map.Entry<String, String> entry : pageItems.getAllItems().entrySet()) {
-            sb.append(entry.getKey() + ":\t" + entry.getValue() + "\n");
+        for (PageItem item : page.getPageItems().getItems()) {
+            sb.append(item.getItemName() + ":\t" + item.getItemValue() + "\n");
         }
         logger.info(sb.toString());
     }

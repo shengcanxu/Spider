@@ -1,6 +1,7 @@
 package web.cano.spider.processor;
 
 import web.cano.spider.Page;
+import web.cano.spider.PageItem;
 import web.cano.spider.selector.*;
 
 import java.util.List;
@@ -33,15 +34,14 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         return urls.size();
     }
 
-    protected void putItem(Page page, PageProcessorItem item){
+    protected void putItem(Page page, PageItem item){
         if(item != null && page != null) {
-            page.putField(item.getItemName(), item.getItemType());
-            page.putItem(item.getItemName(), item.getItemValue());
+            page.getPageItems().getItems().add(item);
         }
     }
 
     //爬取一个字段
-    protected PageProcessorItem extratBy(Page page, String pattern, PageProcessType type,PageProcessorItem item){
+    protected PageItem extratBy(Page page, String pattern, PageProcessType type,PageItem item){
         if(item == null) return null;
 
         Selector selector = getSelector(pattern,type);
@@ -53,7 +53,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
             }
             String v = values.get(0);
             for(int i=1; i<values.size();i++){
-                v = v + separator + values;
+                v = v + separator + values.get(i);
             }
             item.setItemValue(v);
         }else{
@@ -90,7 +90,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         return selector;
     }
 
-    protected PageProcessorItem formatValue(PageProcessorItem item, String regex){
+    protected PageItem formatValue(PageItem item, String regex){
         String value = item.getItemValue();
         value = new PlainText(value).regex(regex).toString();
         item.setItemValue(value);

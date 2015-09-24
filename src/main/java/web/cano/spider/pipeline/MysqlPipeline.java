@@ -2,10 +2,7 @@ package web.cano.spider.pipeline;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import web.cano.spider.Page;
-import web.cano.spider.PageItems;
-import web.cano.spider.Spider;
-import web.cano.spider.Task;
+import web.cano.spider.*;
 import web.cano.spider.utils.BaseDAO;
 
 import java.util.HashMap;
@@ -25,10 +22,18 @@ public class MysqlPipeline implements Pipeline {
     //是否清空数据库
     private boolean shouldResetDb = false;
 
+    //是否将多条记录分成多个记录存储
+    private boolean shouldSplitMultiContent = false;
+
     private MysqlPipeline(){}
 
     public MysqlPipeline(boolean shouldResetDb){
+        this(shouldResetDb,false);
+    }
+
+    public MysqlPipeline(boolean shouldResetDb,boolean shouldSplitMultiContent){
         this.shouldResetDb = shouldResetDb;
+        this.shouldSplitMultiContent = shouldSplitMultiContent;
     }
 
     @Override
@@ -51,7 +56,7 @@ public class MysqlPipeline implements Pipeline {
             }
         }
 
-        insertToDb(page,tableName);
+        insertToDb(page, tableName);
     }
 
     private void insertToDb(Page page, String tableName) {
@@ -59,9 +64,9 @@ public class MysqlPipeline implements Pipeline {
         String keys = "`id`";
         String values = "NULL";
 
-        for (Map.Entry<String,String> entry: page.getPageItems().getAllItems().entrySet()) {
-            keys = keys + ", `" + entry.getKey() + "`";
-            values = values + ", '" + entry.getValue() + "'";
+        for(PageItem item : page.getPageItems().getItems()){
+            keys = keys + ", `" + item.getItemName() + "`";
+            values = values + ", '" + item.getItemValue() + "'";
         }
         sql = sql + keys + ") VALUES (" + values + ");";
         logger.info(sql);
@@ -73,7 +78,7 @@ public class MysqlPipeline implements Pipeline {
      * @return
      */
     private boolean createTable(Page page, String tableName) {
-        Map<String, PageItems.PageItemsType> fields = page.getPageItems().getAllFields();
+        //Map<String, PageItem.PageItemType> fields = page.getPageItems().getAllFields();
 
         if(this.shouldResetDb){
             String sql = "DROP TABLE IF EXISTS `" + tableName + "`;";
@@ -83,9 +88,9 @@ public class MysqlPipeline implements Pipeline {
 
         logger.info("creating table " + tableName);
         String sql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (`id` int(11) NOT NULL AUTO_INCREMENT";
-        Map<String,String> map = getTableFields(fields);
-        for (Map.Entry<String,String> entry : map.entrySet()) {
-            sql = sql + ", `" + entry.getKey() + "` " + entry.getValue() + " NULL";
+        PageItems pageItems = page.getPageItems();
+        for (PageItem item : pageItems.getItems()) {
+            sql = sql + ", `" + item.getItemName() + "` " + getItemTypeString(item.getItemType()) + " NULL";
         }
         sql = sql + ", PRIMARY KEY (`id`)) ENGINE=myisam;";
         logger.info(sql);
@@ -95,50 +100,23 @@ public class MysqlPipeline implements Pipeline {
         return true;
     }
 
-    private Map<String,String> getTableFields(Map<String, PageItems.PageItemsType> fields){
-        //TODO: need to change here to support filemap etc.
-//        Map<String, String> map = new HashMap<String, String>();
-//        Field[] fields = clazz.getDeclaredFields();
-//        AccessibleObject.setAccessible(fields, true);
-//        for(Field field : fields){
-//            if(field.getName().startsWith("this")) { //this is field for inner-Class, so need to ignore it
-//                continue;
-//            }else if(PageModel.class.isAssignableFrom(field.getType())){
-//                Map<String, String> subpageMap = getTableFieldsFromPageModel(field.getType());
-//                map.putAll(subpageMap);
-//            }else {
-//                if (field.getAnnotation(DownloadFile.class) != null) {
-//                    map.put(field.getName() + "FileMap", "text");
-//                }
-//                map.put(field.getName(), getAnnotationFieldType(field));
-//            }
-//        }
-
-        Map<String, String> map = new HashMap<String, String>();
-        for(Map.Entry<String,PageItems.PageItemsType> entry : fields.entrySet()){
-            PageItems.PageItemsType pageItemsType = entry.getValue();
-            switch (pageItemsType){
+    private String getItemTypeString(PageItem.PageItemType itemType){
+            switch (itemType){
                 case STRING:{
-                    map.put(entry.getKey(), "varchar(1000)");
-                    break;
+                    return "varchar(1000)";
                 }
                 case INT: {
-                    map.put(entry.getKey(), "int(11)");
-                    break;
+                    return "int(11)";
                 }
                 case DATETIME:{
-                    map.put(entry.getKey(), "datetime");
-                    break;
+                    return "datetime";
                 }
                 case TEXT:{
-                    map.put(entry.getKey(), "text");
-                    break;
+                    return "text";
                 }
                 default:{
-                    map.put(entry.getKey(), "varchar(1000)");
+                    return "varchar(1000)";
                 }
             }
-        }
-        return map;
     }
 }

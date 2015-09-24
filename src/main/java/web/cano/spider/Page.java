@@ -123,23 +123,6 @@ public class Page {
     }
 
     /**
-     * store extract results
-     *
-     * @param key
-     * @param field
-     */
-    public void putItem(String key, String field) {
-        pageItems.putItem(key, field);
-    }
-
-    /**
-     * 存储字段属性
-     */
-    public void putField(String fieldName, PageItems.PageItemsType pageItemsType){
-        pageItems.putField(fieldName,pageItemsType);
-    }
-
-    /**
      * get html content of page
      *
      * @return html
