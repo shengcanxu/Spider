@@ -5,13 +5,16 @@ import web.cano.spider.Page;
 import web.cano.spider.PageItems;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
+import web.cano.spider.pipeline.MysqlPipeline;
 import web.cano.spider.pipeline.TestCallabckPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.PageProcessorItem;
 import web.cano.spider.processor.TestableProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
+import web.cano.spider.utils.BaseDAO;
 
+import java.util.List;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -19,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class RedisSchedulerTest extends DefaultPageProcessor implements TestableProcessor {
+public class MysqlPipelineTest extends DefaultPageProcessor implements TestableProcessor {
     private Page page;
     private Spider spider;
 
@@ -55,23 +58,28 @@ public class RedisSchedulerTest extends DefaultPageProcessor implements Testable
 
     @Test
     public void testExtractContentUrl() throws Exception{
-        PageProcessor processor = new RedisSchedulerTest();
+        PageProcessor processor = new MysqlPipelineTest();
         Spider.create(processor)
                 .setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),true))
                 .addPipeline(new TestCallabckPipeline())
+                .addPipeline(new MysqlPipeline(true))
                 .addStartPage(new Page("blog_sina_detail.html", true)) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
                 .run();
 
 
         //做测试
-        TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
-        Map<String, String> items = pageItems.getAllItems();
+        BaseDAO dao = BaseDAO.getInstance("canospider");
+        String sql = "SELECT * FROM `mysqlpipelinetest`";
+        List<Map<String,Object>> result = dao.executeQuery(sql);
 
-        assertThat(items.size()).isEqualTo(3);
-        assertThat(items.get("title")).isEqualToIgnoringCase("编程为什么有趣？ 太有共鸣了");
-        assertThat(items.get("tag")).isEqualToIgnoringCase("it");
-        assertThat(items.get("date")).isEqualToIgnoringCase("2011-03-24 16:04:08");
+        assertThat(result.size()).isEqualTo(1);
+        Map<String,Object> line = result.get(0);
+        assertThat(line.get("title")).isEqualTo("编程为什么有趣？ 太有共鸣了");
+        assertThat(line.get("tag")).isEqualTo("it");
+        assertThat(line.get("date")).isEqualTo("2011-03-24 16:04:08");
+
+        sql = "drop table `mysqlpipelinetest`";
+        dao.executeUpdate(sql);
     }
 
     @Override

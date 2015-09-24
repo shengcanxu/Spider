@@ -19,11 +19,6 @@ import static org.assertj.core.api.Assertions.assertThat;
  * @author code4crafter@gmail.com <br>
  */
 public class SimpleContentExtractTest extends DefaultPageProcessor implements TestableProcessor {
-
-    public static final String URL_LIST = "http://blog\\.sina\\.com\\.cn/s/articlelist_1487828712_0_\\d+\\.html";
-
-    public static final String URL_POST = "http://blog\\.sina\\.com\\.cn/s/blog_\\w+\\.html";
-
     private Page page;
     private Spider spider;
 

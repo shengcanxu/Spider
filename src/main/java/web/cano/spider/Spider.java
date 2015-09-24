@@ -106,7 +106,11 @@ public class Spider implements Runnable, Task {
 
     private int emptySleepTime = 30000;
 
+    //是否应该从redis中恢复上次的url set
     private boolean recoverUrlSet = false;
+
+    //是否应该将url set 保存到数据库
+    private boolean saveUrlSet = false;
 
     /**
      * create a spider with pageProcessor.
@@ -300,7 +304,9 @@ public class Spider implements Runnable, Task {
     }
 
     protected void postRun(){
-        this.scheduler.saveUrlSet(this);
+        if(saveUrlSet) {
+            this.scheduler.saveUrlSet(this);
+        }
     }
 
     protected void onError(Request request) {
@@ -657,6 +663,11 @@ public class Spider implements Runnable, Task {
 
     public Spider setRecoverUrlSet(boolean recoverUrlSet) {
         this.recoverUrlSet = recoverUrlSet;
+        return this;
+    }
+
+    public Spider setSaveUrlSet(boolean saveUrlSet) {
+        this.saveUrlSet = saveUrlSet;
         return this;
     }
 
