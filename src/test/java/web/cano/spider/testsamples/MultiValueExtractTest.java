@@ -62,18 +62,17 @@ public class MultiValueExtractTest extends DefaultPageProcessor implements Testa
         PageItems pageItems = testableProcessor.getPage().getPageItems();
 
         assertThat(pageItems.getItems().size()).isEqualTo(2);
-        String titles = pageItems.getPageItemByName("title").getItemValue();
-        String urls = pageItems.getPageItemByName("url").getItemValue();
-        String[] titleList = titles.split("@#\\$");
-        String[] urlList = urls.split("@#\\$");
-        assertThat(titleList.length).isEqualTo(50);
-        assertThat(titleList[0]).isEqualToIgnoringCase("zzSed学习笔记");
-        assertThat(titleList[10]).isEqualToIgnoringCase("一些IR相关概念");
-        assertThat(titleList[48]).isEqualToIgnoringCase("分治算法的一点思考--为什么大多使…");
-        assertThat(urlList.length).isEqualTo(50);
-        assertThat(urlList[0]).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
-        assertThat(urlList[10]).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100mfqf.html");
-        assertThat(urlList[49]).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100g8cy.html");
+        List<String> titles = (List<String>) pageItems.getPageItemByName("title").getItemValue();
+        List<String> urls = (List<String>) pageItems.getPageItemByName("url").getItemValue();
+
+        assertThat(titles.size()).isEqualTo(50);
+        assertThat(titles.get(0)).isEqualToIgnoringCase("zzSed学习笔记");
+        assertThat(titles.get(10)).isEqualToIgnoringCase("一些IR相关概念");
+        assertThat(titles.get(48)).isEqualToIgnoringCase("分治算法的一点思考--为什么大多使…");
+        assertThat(urls.size()).isEqualTo(50);
+        assertThat(urls.get(0)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
+        assertThat(urls.get(10)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100mfqf.html");
+        assertThat(urls.get(49)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100g8cy.html");
     }
 
     @Override

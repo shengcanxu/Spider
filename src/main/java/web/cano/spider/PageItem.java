@@ -14,7 +14,7 @@ public class PageItem {
 
     private boolean isMultiple;
 
-    private String itemValue;
+    private Object itemValue;
 
     private PageItem(){}
 
@@ -41,11 +41,11 @@ public class PageItem {
         return isMultiple;
     }
 
-    public String getItemValue() {
+    public Object getItemValue() {
         return itemValue;
     }
 
-    public void setItemValue(String itemValue) {
+    public void setItemValue(Object itemValue) {
         this.itemValue = itemValue;
     }
 

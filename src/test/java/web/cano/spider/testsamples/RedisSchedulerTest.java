@@ -68,9 +68,9 @@ public class RedisSchedulerTest extends DefaultPageProcessor implements Testable
         PageItems pageItems = testableProcessor.getPage().getPageItems();
 
         assertThat(pageItems.getItems().size()).isEqualTo(3);
-        assertThat(pageItems.getPageItemByName("title").getItemValue()).isEqualToIgnoringCase("编程为什么有趣？ 太有共鸣了");
-        assertThat(pageItems.getPageItemByName("tag").getItemValue()).isEqualToIgnoringCase("it");
-        assertThat(pageItems.getPageItemByName("date").getItemValue()).isEqualToIgnoringCase("2011-03-24 16:04:08");
+        assertThat(pageItems.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("编程为什么有趣？ 太有共鸣了");
+        assertThat(pageItems.getPageItemByName("tag").getItemValue().toString()).isEqualToIgnoringCase("it");
+        assertThat(pageItems.getPageItemByName("date").getItemValue().toString()).isEqualToIgnoringCase("2011-03-24 16:04:08");
     }
 
     @Override

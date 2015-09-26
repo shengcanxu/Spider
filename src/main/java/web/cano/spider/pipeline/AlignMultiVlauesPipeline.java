@@ -8,7 +8,6 @@ import web.cano.spider.PageItems;
 import web.cano.spider.Task;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Write results in console.<br>
@@ -17,7 +16,7 @@ import java.util.Map;
  * @author code4crafter@gmail.com <br>
  * @since 0.1.0
  */
-public class ConsolePipeline implements Pipeline {
+public class AlignMultiVlauesPipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
@@ -31,24 +30,21 @@ public class ConsolePipeline implements Pipeline {
             if(item.isMultiple()){
                 isMultiple = true;
                 List<String> list = (List<String>) item.getItemValue();
-                multiNumber = list.size();
-                break;
+                if(list.size() > multiNumber) multiNumber = list.size();
             }
         }
+        if(!isMultiple) return;
 
-        StringBuilder sb = new StringBuilder();
-        sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");
-        for(int i=0; i<multiNumber; i++) {
-            for (PageItem item : pageItems.getItems()) {
-                if(item.isMultiple()){
-                    List<String> list = (List<String>) item.getItemValue();
-                    sb.append(item.getItemName() + ":\t" + list.get(i) + "\n");
-                }else {
-                    sb.append(item.getItemName() + ":\t" + item.getItemValue().toString() + "\n");
+        for (PageItem item : pageItems.getItems()) {
+            if(item.isMultiple()){
+                List<String> list = (List<String>) item.getItemValue();
+                for(int i= list.size(); i<multiNumber; i++){
+                    list.add("");
+                }
+                if(list.size() < multiNumber){
+                    item.setItemValue(list);
                 }
             }
-            sb.append("\n");
         }
-        logger.info(sb.toString());
     }
 }

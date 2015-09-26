@@ -51,11 +51,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
             if(values == null || values.size() ==0){
                 return null;
             }
-            String v = values.get(0);
-            for(int i=1; i<values.size();i++){
-                v = v + separator + values.get(i);
-            }
-            item.setItemValue(v);
+            item.setItemValue(values);
         }else{
             String value = page.getHtml().selectDocument(selector);
             item.setItemValue(value);
@@ -91,9 +87,20 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
     }
 
     protected PageItem formatValue(PageItem item, String regex){
-        String value = item.getItemValue();
-        value = new PlainText(value).regex(regex).toString();
-        item.setItemValue(value);
+        if(item.getItemType() == PageItem.PageItemType.STRING) { //只是format string
+            if(item.isMultiple()){
+                List<String> list = (List<String>) item.getItemValue();
+                for(int i=0; i<list.size(); i++){
+                    String str = new PlainText(list.get(i)).regex(regex).toString();
+                    list.set(i,str);
+                }
+                item.setItemValue(list);
+            }else {
+                String value = item.getItemValue().toString();
+                value = new PlainText(value).regex(regex).toString();
+                item.setItemValue(value);
+            }
+        }
         return item;
     }
 
