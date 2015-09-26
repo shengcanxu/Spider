@@ -63,6 +63,8 @@ public class Site {
      */
     private String multiValueSeparator = "@#$";
 
+    private boolean shouldSplitToMultipleValues = false;
+
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<Integer>();
 
     private Set<Integer> acceptStatCode = DEFAULT_STATUS_CODE_SET;
@@ -223,8 +225,18 @@ public class Site {
         return multiValueSeparator;
     }
 
-    public void setMultiValueSeparator(String multiValueSeparator) {
+    public Site setMultiValueSeparator(String multiValueSeparator) {
         this.multiValueSeparator = multiValueSeparator;
+        return this;
+    }
+
+    public boolean isShouldSplitToMultipleValues() {
+        return shouldSplitToMultipleValues;
+    }
+
+    public Site setShouldSplitToMultipleValues(boolean shouldSplitToMultipleValues) {
+        this.shouldSplitToMultipleValues = shouldSplitToMultipleValues;
+        return this;
     }
 
     /**
