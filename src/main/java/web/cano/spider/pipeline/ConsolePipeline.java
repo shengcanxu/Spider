@@ -5,7 +5,6 @@ import org.slf4j.LoggerFactory;
 import web.cano.spider.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Write results in console.<br>
@@ -21,8 +20,21 @@ public class ConsolePipeline implements Pipeline {
     public void process(Page page, Task task) {
         if (page.isSkip()) return;
         Spider spider = (Spider) task;
-        if(spider.getSite().isShouldSplitToMultipleValues()){
-            printAsMultipleRecords(page);
+        PageItems pageItems = page.getPageItems();
+
+        boolean isMultiple = false;
+        int multiNumber = 1;
+        for(PageItem item : pageItems.getItems()){
+            if(item.isMultiple()){
+                isMultiple = true;
+                List<String> list = (List<String>) item.getItemValue();
+                multiNumber = list.size();
+                break;
+            }
+        }
+
+        if(isMultiple && spider.getSite().isShouldSplitToMultipleValues()){
+            printAsMultipleRecords(page,multiNumber);
         }else {
             String separator = spider.getSite().getMultiValueSeparator();
             printAsSingleRecord(page,separator);
@@ -48,19 +60,8 @@ public class ConsolePipeline implements Pipeline {
         logger.info(sb.toString());
     }
 
-    private void printAsMultipleRecords(Page page){
+    private void printAsMultipleRecords(Page page,int multiNumber){
         PageItems pageItems = page.getPageItems();
-
-        boolean isMultiple = false;
-        int multiNumber = 1;
-        for(PageItem item : pageItems.getItems()){
-            if(item.isMultiple()){
-                isMultiple = true;
-                List<String> list = (List<String>) item.getItemValue();
-                multiNumber = list.size();
-                break;
-            }
-        }
 
         StringBuilder sb = new StringBuilder();
         sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");

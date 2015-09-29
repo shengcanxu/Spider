@@ -2,10 +2,7 @@ package web.cano.spider.pipeline;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import web.cano.spider.Page;
-import web.cano.spider.PageItem;
-import web.cano.spider.PageItems;
-import web.cano.spider.Task;
+import web.cano.spider.*;
 
 import java.util.List;
 
@@ -22,6 +19,8 @@ public class AlignMultiVlauesPipeline implements Pipeline {
     @Override
     public void process(Page page, Task task) {
         if(page.isSkip()) return;
+        Spider spider = (Spider) task;
+        if(!task.getSite().isShouldSplitToMultipleValues()) return;
         PageItems pageItems = page.getPageItems();
 
         boolean isMultiple = false;

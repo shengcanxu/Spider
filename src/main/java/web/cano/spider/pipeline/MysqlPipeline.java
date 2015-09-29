@@ -5,8 +5,7 @@ import org.slf4j.LoggerFactory;
 import web.cano.spider.*;
 import web.cano.spider.utils.BaseDAO;
 
-import java.util.HashMap;
-import java.util.Map;
+import java.util.List;
 
 /**
  * Created by canoxu on 2015/1/20.
@@ -56,10 +55,28 @@ public class MysqlPipeline implements Pipeline {
             }
         }
 
-        insertToDb(page, tableName);
+        //insert to db
+        Spider spider = (Spider) task;
+        PageItems pageItems = page.getPageItems();
+        boolean isMultiple = false;
+        int multiNumber = 1;
+        for(PageItem item : pageItems.getItems()){
+            if(item.isMultiple()){
+                isMultiple = true;
+                List<String> list = (List<String>) item.getItemValue();
+                multiNumber = list.size();
+                break;
+            }
+        }
+
+        if (isMultiple && spider.getSite().isShouldSplitToMultipleValues()) {
+            insertRecordsToDb(page,tableName,multiNumber);
+        } else {
+            insertRecordToDb(page, tableName);
+        }
     }
 
-    private void insertToDb(Page page, String tableName) {
+    private void insertRecordToDb(Page page, String tableName){
         String sql = "INSERT DELAYED INTO `" + tableName + "` (";
         String keys = "`id`";
         String values = "NULL";
@@ -69,6 +86,36 @@ public class MysqlPipeline implements Pipeline {
             values = values + ", '" + item.getItemValue() + "'";
         }
         sql = sql + keys + ") VALUES (" + values + ");";
+        logger.info(sql);
+        dao.executeUpdate(sql);
+    }
+
+    private void insertRecordsToDb(Page page, String tableName,int multiNumber){
+        PageItems pageItems = page.getPageItems();
+
+        String keys = "`id`";
+        String values = "";
+        for(int i=0; i<multiNumber; i++) {
+            String value = "NULL";
+            for (PageItem item : pageItems.getItems()) {
+                if(item.isMultiple()){
+                    List<String> list = (List<String>) item.getItemValue();
+                    if(i==0) keys = keys + ", `" + item.getItemName() + "`";
+                    value = value + ", '" + list.get(i) + "'";
+                }else {
+                    if(i==0) keys = keys + ", `" + item.getItemName() + "`";
+                    value = value + ", '" + item.getItemValue() + "'";
+                }
+            }
+            if(i==0) {
+                values = values + "(" + value + ")";
+            }else{
+                values = values + ",\n(" + value + ")";
+            }
+        }
+
+        String sql = "INSERT DELAYED INTO `" + tableName + "` (";
+        sql = sql + keys + ") VALUES " + values + ";";
         logger.info(sql);
         dao.executeUpdate(sql);
     }
