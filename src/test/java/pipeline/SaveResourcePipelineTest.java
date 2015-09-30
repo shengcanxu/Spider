@@ -46,12 +46,12 @@ public class SaveResourcePipelineTest extends DefaultPageProcessor implements Te
         Spider.create(processor)
                 .addPipeline(new SaveResourcePipeline("f:/test/"))
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("http://simg.sinajs.cn/blog7newtpl/image/3/3_1/images/sinablogb.jpg").setIsResource(true))
+                .addStartPage(new Page("sina_cn.jpg").setTest(true).setIsResource(true))
                 .run();
 
 
         //做测试
-        File file = new File("f:/test/httpwwwbaiducom");
+        File file = new File("f:/test/25e52d8af2b3f27cb5829ea0da0c027b.jpg");
         assertThat(file.exists()).isEqualTo(true);
         assertThat(file.getUsableSpace()).isGreaterThan(100);
 

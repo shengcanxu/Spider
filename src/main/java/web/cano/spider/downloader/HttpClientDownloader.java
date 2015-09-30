@@ -1,6 +1,7 @@
 package web.cano.spider.downloader;
 
 import com.google.common.collect.Sets;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.http.HttpHost;
@@ -69,19 +70,18 @@ public class HttpClientDownloader extends AbstractDownloader {
 
     private Page getTestPage(Request request){
         File file = new File( this.getClass().getClassLoader().getResource(request.getPage().getUrl()).getFile() );
-        StringBuilder sb = new StringBuilder();
         try {
-            BufferedReader br=new BufferedReader(new InputStreamReader(new FileInputStream(file),"UTF-8"));
-            String line = null;
-            while ((line = br.readLine()) != null) {
-                sb.append(line);
+            if(request.getPage().isResource()){
+                byte[] bytes = FileUtils.readFileToByteArray(file);
+                request.getPage().setResourceBytes(bytes);
+            }else {
+                String content = FileUtils.readFileToString(file);
+                request.getPage().setRawText(content);
             }
-            br.close();
-        }catch(Exception e){
+        } catch (IOException e) {
             e.printStackTrace();
         }
 
-        request.getPage().setRawText(sb.toString());
         request.getPage().setUrl(request.getPage().getUrl());
         request.getPage().setRequest(request);
         request.getPage().setStatusCode(200);
