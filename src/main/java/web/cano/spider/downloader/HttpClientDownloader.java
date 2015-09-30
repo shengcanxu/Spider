@@ -199,8 +199,13 @@ public class HttpClientDownloader extends AbstractDownloader {
     }
 
     protected Page handleResponse(Request request, String charset, HttpResponse httpResponse, Task task) throws IOException {
-        String content = getContent(charset, httpResponse);
-        request.getPage().setRawText(content);
+        if(request.getPage().isResource()){
+            byte[] bytes = getResource(charset,httpResponse);
+            request.getPage().setResourceBytes(bytes);
+        }else {
+            String content = getContent(charset, httpResponse);
+            request.getPage().setRawText(content);
+        }
         request.getPage().setUrl(request.getUrl());
         request.getPage().setRequest(request);
         request.getPage().setStatusCode(httpResponse.getStatusLine().getStatusCode());
@@ -220,6 +225,10 @@ public class HttpClientDownloader extends AbstractDownloader {
         } else {
             return IOUtils.toString(httpResponse.getEntity().getContent(), charset);
         }
+    }
+
+    protected byte[] getResource(String charset, HttpResponse httpResponse) throws IOException {
+        return IOUtils.toByteArray(httpResponse.getEntity().getContent());
     }
 
     protected String getHtmlCharset(HttpResponse httpResponse, byte[] contentBytes) throws IOException {

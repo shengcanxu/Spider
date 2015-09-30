@@ -55,7 +55,7 @@ public class SimpleContentExtractTest extends DefaultPageProcessor implements Te
         PageProcessor processor = new SimpleContentExtractTest();
         Spider.create(processor)
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("blog_sina_detail.html", true)) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
+                .addStartPage(new Page("blog_sina_detail.html").setTest(true)) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
                 .run();
 
 

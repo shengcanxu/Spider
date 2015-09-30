@@ -1,26 +1,25 @@
-package web.cano.spider.core;
+package pipeline;
 
 import org.junit.Test;
 import web.cano.spider.Page;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
+import web.cano.spider.pipeline.SaveResourcePipeline;
 import web.cano.spider.pipeline.TestCallabckPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
 
-import java.util.List;
+import java.io.File;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class ParseUrlTest extends DefaultPageProcessor implements TestableProcessor {
+public class SaveResourcePipelineTest extends DefaultPageProcessor implements TestableProcessor {
     private Page page;
     private Spider spider;
-
-
 
     private Site site = Site
             .me()
@@ -31,7 +30,9 @@ public class ParseUrlTest extends DefaultPageProcessor implements TestableProces
 
     @Override
     public void process(Page page) {
-        parseUrls(page, "//div[@class=\"articleList\"]/div//a/@href", PageProcessType.XPath);
+        if(page.isResource()){
+            page.setSkip(true);
+        }
     }
 
     @Override
@@ -40,22 +41,23 @@ public class ParseUrlTest extends DefaultPageProcessor implements TestableProces
     }
 
     @Test
-    public void testParseUrl() throws Exception{
-        PageProcessor processor = new ParseUrlTest();
+    public void testSaveSourceFile() throws Exception{
+        PageProcessor processor = new SaveResourcePipelineTest();
         Spider.create(processor)
+                .addPipeline(new SaveResourcePipeline("f:/test/"))
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("blog_sina.html").setTest(true)) //网上url：http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html
+                .addStartPage(new Page("http://simg.sinajs.cn/blog7newtpl/image/3/3_1/images/sinablogb.jpg").setIsResource(true))
                 .run();
 
 
         //做测试
-        TestableProcessor testableProcessor = (TestableProcessor) processor;
-        List<Page> pages = testableProcessor.getPage().getTargetPages();
-        assertThat(pages.size()).isEqualTo(50);
-        assertThat(pages.get(0).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
-        assertThat(pages.get(9).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100msy6.html");
-        assertThat(pages.get(49).getUrl()).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100g8cy.html");
+        File file = new File("f:/test/httpwwwbaiducom");
+        assertThat(file.exists()).isEqualTo(true);
+        assertThat(file.getUsableSpace()).isGreaterThan(100);
 
+        file.delete();
+        File folder= new File("f:/test/");
+        folder.delete();
     }
 
     @Override

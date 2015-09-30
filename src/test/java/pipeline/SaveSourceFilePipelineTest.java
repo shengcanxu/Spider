@@ -41,7 +41,7 @@ public class SaveSourceFilePipelineTest extends DefaultPageProcessor implements 
         Spider.create(processor)
                 .addPipeline(new SaveSourceFilePipeline("f:/test/"))
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("http://www.baidu.com")) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
+                .addStartPage(new Page("http://www.baidu.com"))
                 .run();
 
 

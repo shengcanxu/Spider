@@ -380,10 +380,8 @@ public class Spider implements Runnable, Task {
         }
         pageProcessor.process(page);
         extractAndAddPages(page, spawnUrl);
-        if (!page.isSkip()) {
-            for (Pipeline pipeline : pipelines) {
-                pipeline.process(page, this);
-            }
+        for (Pipeline pipeline : pipelines) {
+            pipeline.process(page, this);
         }
         //for proxy status management
         request.setStatusCode(page.getStatusCode());

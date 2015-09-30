@@ -19,6 +19,7 @@ public class AlignMultiVlauesPipeline implements Pipeline {
     @Override
     public void process(Page page, Task task) {
         if(page.isSkip()) return;
+
         Spider spider = (Spider) task;
         if(!task.getSite().isShouldSplitToMultipleValues()) return;
         PageItems pageItems = page.getPageItems();

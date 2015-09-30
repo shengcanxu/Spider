@@ -31,6 +31,7 @@ public class Page {
     private Html html;
     private Json json;
     private String rawText;
+    private byte[] resourceBytes;
     private String url;
 
     private int statusCode;
@@ -49,25 +50,25 @@ public class Page {
      */
     private boolean isRefresh = false;
 
+    /**
+     * 标识page是不是仅仅为了测试
+     */
     private boolean isTest = false;
+
+    /**
+     * 标识page是不是resource，而不是html
+     */
+    private boolean isResource = false;
 
     private Page() {
 
     }
 
     public Page(String  url){
-        this(url,null,false);
-    }
-
-    public Page(String url, boolean isTest){
-        this(url,null,isTest);
+        this(url,null);
     }
 
     public Page(String url, Page fatherPage){
-        this(url,fatherPage,false);
-    }
-
-    private Page(String url, Page fatherPage,boolean isTest){
         if (StringUtils.isBlank(url) || url.equals("#")) {
             this.url = null;
         }else {
@@ -75,7 +76,6 @@ public class Page {
         }
 
         this.fatherPage = fatherPage;
-        this.isTest = isTest;
     }
 
     public int getCycleTriedTimes() {
@@ -264,12 +264,31 @@ public class Page {
         return this;
     }
 
+    public byte[] getResourceBytes() {
+        return resourceBytes;
+    }
+
+    public Page setResourceBytes(byte[] resourceBytes) {
+        this.resourceBytes = resourceBytes;
+        return this;
+    }
+
     public boolean isTest() {
         return isTest;
     }
 
-    private void setTest(boolean isTest) {
+    public Page setTest(boolean isTest) {
         this.isTest = isTest;
+        return this;
+    }
+
+    public boolean isResource() {
+        return isResource;
+    }
+
+    public Page setIsResource(boolean isResource) {
+        this.isResource = isResource;
+        return this;
     }
 
     public Page getFatherPage() {

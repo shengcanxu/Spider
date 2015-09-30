@@ -53,7 +53,7 @@ public class MysqlMultiValueTest extends DefaultPageProcessor implements Testabl
         Spider.create(processor)
                 .addPipeline(new MysqlPipeline(true))
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("blog_sina.html", true)) //网上url：http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html
+                .addStartPage(new Page("blog_sina.html").setTest(true)) //网上url：http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html
                 .run();
 
 

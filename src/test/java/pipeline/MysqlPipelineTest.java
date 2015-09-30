@@ -62,7 +62,7 @@ public class MysqlPipelineTest extends DefaultPageProcessor implements TestableP
                 .setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),true))
                 .addPipeline(new TestCallabckPipeline())
                 .addPipeline(new MysqlPipeline(true))
-                .addStartPage(new Page("blog_sina_detail.html", true)) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
+                .addStartPage(new Page("blog_sina_detail.html").setTest(true)) //网上url: http://blog.sina.com.cn/s/blog_58ae76e80100pjln.html
                 .run();
 
 
