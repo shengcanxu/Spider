@@ -1,4 +1,4 @@
-package web.cano.spider.testsamples;
+package scheduler;
 
 import org.junit.Test;
 import web.cano.spider.Page;
@@ -11,8 +11,6 @@ import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.PageItem;
 import web.cano.spider.processor.TestableProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
-
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 

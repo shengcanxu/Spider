@@ -1,23 +1,24 @@
-package web.cano.spider.testsamples;
+package web.cano.spider.core;
 
 import org.junit.Test;
-import web.cano.spider.*;
-import web.cano.spider.pipeline.MysqlPipeline;
+import web.cano.spider.Page;
+import web.cano.spider.PageItems;
+import web.cano.spider.Site;
+import web.cano.spider.Spider;
 import web.cano.spider.pipeline.TestCallabckPipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
+import web.cano.spider.PageItem;
 import web.cano.spider.processor.TestableProcessor;
-import web.cano.spider.utils.BaseDAO;
 
 import java.util.List;
-import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class MysqlMultiValueTest extends DefaultPageProcessor implements TestableProcessor {
+public class MultiValueExtractTest extends DefaultPageProcessor implements TestableProcessor {
     private Page page;
     private Spider spider;
 
@@ -49,32 +50,29 @@ public class MysqlMultiValueTest extends DefaultPageProcessor implements Testabl
 
     @Test
     public void testExtractContentUrl() throws Exception{
-        PageProcessor processor = new MysqlMultiValueTest();
+        PageProcessor processor = new MultiValueExtractTest();
         Spider.create(processor)
-                .addPipeline(new MysqlPipeline(true))
                 .addPipeline(new TestCallabckPipeline())
                 .addStartPage(new Page("blog_sina.html", true)) //网上url：http://blog.sina.com.cn/s/articlelist_1487828712_0_1.html
                 .run();
 
 
         //做测试
-        BaseDAO dao = BaseDAO.getInstance("canospider");
-        String sql = "SELECT * FROM `mysqlmultivaluetest`";
-        List<Map<String,Object>> result = dao.executeQuery(sql);
+        TestableProcessor testableProcessor = (TestableProcessor) processor;
+        PageItems pageItems = testableProcessor.getPage().getPageItems();
 
-        assertThat(result.size()).isEqualTo(50);
-        Map<String,Object> line1 = result.get(0);
-        assertThat(line1.get("title")).isEqualTo("zzSed学习笔记");
-        assertThat(line1.get("url")).isEqualTo("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
-        Map<String,Object> line2 = result.get(10);
-        assertThat(line2.get("title")).isEqualTo("一些IR相关概念");
-        assertThat(line2.get("url")).isEqualTo("http://blog.sina.com.cn/s/blog_58ae76e80100mfqf.html");
-        Map<String,Object> line3 = result.get(48);
-        assertThat(line3.get("title")).isEqualTo("分治算法的一点思考--为什么大多使…");
-        assertThat(line3.get("url")).isEqualTo("http://blog.sina.com.cn/s/blog_58ae76e80100gcsa.html");
+        assertThat(pageItems.getItems().size()).isEqualTo(2);
+        List<String> titles = (List<String>) pageItems.getPageItemByName("title").getItemValue();
+        List<String> urls = (List<String>) pageItems.getPageItemByName("url").getItemValue();
 
-        sql = "drop table `mysqlmultivaluetest`";
-        dao.executeUpdate(sql);
+        assertThat(titles.size()).isEqualTo(50);
+        assertThat(titles.get(0)).isEqualToIgnoringCase("zzSed学习笔记");
+        assertThat(titles.get(10)).isEqualToIgnoringCase("一些IR相关概念");
+        assertThat(titles.get(48)).isEqualToIgnoringCase("分治算法的一点思考--为什么大多使…");
+        assertThat(urls.size()).isEqualTo(50);
+        assertThat(urls.get(0)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100to5q.html");
+        assertThat(urls.get(10)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100mfqf.html");
+        assertThat(urls.get(49)).isEqualToIgnoringCase("http://blog.sina.com.cn/s/blog_58ae76e80100g8cy.html");
     }
 
     @Override
