@@ -1,23 +1,16 @@
 package web.cano.spider.pipeline;
 
-import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.lang3.builder.ToStringBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import sun.security.provider.ConfigFile;
-import web.cano.spider.*;
+import web.cano.spider.Page;
+import web.cano.spider.Task;
 
-import java.io.*;
-import java.util.List;
+import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 
-/**
- * Write results in console.<br>
- * Usually used in test.
- *
- * @author code4crafter@gmail.com <br>
- * @since 0.1.0
- */
+
 public class SaveSourceFilePipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -38,7 +31,7 @@ public class SaveSourceFilePipeline implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
-        if (page.isSkip()) return;
+        if (page.isSkip() || page.isResource()) return;
 
         String rawText = page.getRawText();
         String url = page.getUrl();

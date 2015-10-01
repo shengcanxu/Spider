@@ -23,6 +23,14 @@ import java.util.List;
  */
 public class Page {
     private Page fatherPage;
+    /**
+     * parentPageKey 标示这个page和它的fatherPage一起爬取
+     */
+    private String parentPageKey = null;
+    /**
+     * 用户缓存，等待子页面或者分页面
+     */
+    private int subPagesNumber = 0;
 
     private Request request;
 
@@ -164,14 +172,13 @@ public class Page {
      * add urls to fetch
      */
     public void addTargetPages(List<String> pageUrls) {
-        synchronized (targetPages) {
-            for (String s : pageUrls) {
-                if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
-                    continue;
-                }
-                if(!isTest) s = UrlUtils.canonicalizeUrl(s, url.toString());
-                targetPages.add(new Page(s,this));
+        for (String s : pageUrls) {
+            if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
+                continue;
             }
+            if (!isTest) s = UrlUtils.canonicalizeUrl(s, url.toString());
+            Page page = new Page(s, this);
+            addTargetPage(page);
         }
     }
 
@@ -179,13 +186,12 @@ public class Page {
      * add urls to fetch
      */
     public void addTargetPage(String url){
-        synchronized (targetPages){
-            if(StringUtils.isBlank(url) || url.equals("#") || url.startsWith("javascript:")){
-                return;
-            }
-            url = UrlUtils.canonicalizeUrl(url, url.toString());
-            targetPages.add(new Page(url, this));
+        if(StringUtils.isBlank(url) || url.equals("#") || url.startsWith("javascript:")){
+            return;
         }
+        url = UrlUtils.canonicalizeUrl(url, url.toString());
+        Page page = new Page(url, this);
+        addTargetPage(page);
     }
 
 
@@ -197,6 +203,7 @@ public class Page {
     public void addTargetPage(Page page) {
         synchronized (targetPages) {
             page.setFatherPage(this);
+            page.setDepth(this.getDepth()+1);
             targetPages.add(page);
         }
     }
@@ -295,8 +302,35 @@ public class Page {
         return fatherPage;
     }
 
-    public void setFatherPage(Page fatherPage) {
+    public Page setFatherPage(Page fatherPage) {
         this.fatherPage = fatherPage;
+        return this;
+    }
+
+    public String getParentPageKey() {
+        return parentPageKey;
+    }
+
+    public Page setParentPageKey(String parentPageKey) {
+        this.parentPageKey = parentPageKey;
+        return this;
+    }
+
+    public boolean isSubPage(){
+        return this.parentPageKey != null;
+    }
+
+    public boolean hasSubPages() {
+        return subPagesNumber != 0;
+    }
+
+    public Page setSubPagesNumber(int subPagesNumber) {
+        this.subPagesNumber = subPagesNumber;
+        return this;
+    }
+
+    public int getSubPagesNumber(){
+        return this.subPagesNumber;
     }
 
     public boolean isRefresh() {

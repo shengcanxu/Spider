@@ -6,19 +6,13 @@ import web.cano.spider.*;
 
 import java.util.List;
 
-/**
- * Write results in console.<br>
- * Usually used in test.
- *
- * @author code4crafter@gmail.com <br>
- * @since 0.1.0
- */
+
 public class AlignMultiVlauesPipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 
     @Override
     public void process(Page page, Task task) {
-        if(page.isSkip()) return;
+        if(page.isSkip() || page.isResource()) return;
 
         Spider spider = (Spider) task;
         if(!task.getSite().isShouldSplitToMultipleValues()) return;

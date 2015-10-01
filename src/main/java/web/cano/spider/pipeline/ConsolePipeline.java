@@ -18,7 +18,7 @@ public class ConsolePipeline implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
-        if (page.isSkip()) return;
+        if (page.isSkip() || page.isResource()) return;
 
         Spider spider = (Spider) task;
         PageItems pageItems = page.getPageItems();
