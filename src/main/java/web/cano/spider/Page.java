@@ -23,14 +23,20 @@ import java.util.List;
  */
 public class Page {
     private Page fatherPage;
+
     /**
-     * parentPageKey 标示这个page和它的fatherPage一起爬取
+     * 用于爬取子页面
      */
     private String parentPageKey = null;
-    /**
-     * 用户缓存，等待子页面或者分页面
-     */
     private int subPagesNumber = 0;
+
+    /**
+     * 用于爬取分页
+     */
+    private String multiplePageKey = null;
+    private int multiplePageNumber = 0;
+    private String multiplePageItemName;
+    private int multiplePageIndex;
 
     private Request request;
 
@@ -331,6 +337,50 @@ public class Page {
 
     public int getSubPagesNumber(){
         return this.subPagesNumber;
+    }
+
+    public String getMultiplePageKey() {
+        return multiplePageKey;
+    }
+
+    public Page setMultiplePageKey(String multiplePageKey) {
+        this.multiplePageKey = multiplePageKey;
+        return this;
+    }
+
+    public boolean isSubMultiplePage(){
+        return this.multiplePageKey != null;
+    }
+
+    public int getMultiplePageNumber() {
+        return multiplePageNumber;
+    }
+
+    public Page setMultiplePageNumber(int multiplePageNumber) {
+        this.multiplePageNumber = multiplePageNumber;
+        return this;
+    }
+
+    public String getMultiplePageItemName() {
+        return multiplePageItemName;
+    }
+
+    public boolean hasMultiplePages(){
+        return multiplePageNumber != 0;
+    }
+
+    public Page setMultiplePageItemName(String multiplePageItemName) {
+        this.multiplePageItemName = multiplePageItemName;
+        return this;
+    }
+
+    public int getMultiplePageIndex() {
+        return multiplePageIndex;
+    }
+
+    public Page setMultiplePageIndex(int multiplePageIndex) {
+        this.multiplePageIndex = multiplePageIndex;
+        return this;
     }
 
     public boolean isRefresh() {

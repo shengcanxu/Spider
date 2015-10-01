@@ -1,4 +1,4 @@
-package web.cano.spider.core;
+package pipeline;
 
 import org.apache.commons.codec.digest.DigestUtils;
 import org.junit.Test;
@@ -13,7 +13,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 /**
  * @author code4crafter@gmail.com <br>
  */
-public class SubPagesTest extends DefaultPageProcessor implements TestableProcessor {
+public class MultiplePagesTest extends DefaultPageProcessor implements TestableProcessor {
     private Page page;
     private Spider spider;
 
@@ -29,19 +29,24 @@ public class SubPagesTest extends DefaultPageProcessor implements TestableProces
 
     @Override
     public void process(Page page) {
-        if(!page.isSubPage()) {
-            Page subPage = new Page("ximalaya339173subpage.html", page).setTest(true);
-            subPage.setParentPageKey(DigestUtils.md5Hex(page.getUrl()));
-            page.setSubPagesNumber(1);
-            page.addTargetPage(subPage);
+        if(!page.isSubMultiplePage()) {
+            Page subPage1 = new Page("163news_1.html", page).setTest(true);
+            subPage1.setMultiplePageKey(DigestUtils.md5Hex(page.getUrl())).setMultiplePageIndex(1);
+            Page subPage2 = new Page("163news_2.html", page).setTest(true);
+            subPage2.setMultiplePageKey(DigestUtils.md5Hex(page.getUrl())).setMultiplePageIndex(2);
+            page.setMultiplePageNumber(2);
+            page.addTargetPage(subPage1);
+            page.addTargetPage(subPage2);
+            page.setMultiplePageItemName("content");
 
-            PageItem title = new PageItem("title", PageItem.PageItemType.STRING, true, false);
-            title = extratBy(page,"//*[@id=\"mainbox\"]//h1/text()",PageProcessType.XPath,title);
-            putItem(page,title);
+            PageItem content = new PageItem("content", PageItem.PageItemType.STRING, true, false);
+            content = extratBy(page,"//div[@id=\"endText\"]",PageProcessType.XPath,content);
+            putItem(page,content);
         }else{
-            PageItem author = new PageItem("author", PageItem.PageItemType.STRING, true, false);
-            author = extratBy(page,"//*[@id=\"timelinePage\"]//span[@class=\"user_name\"]/h1/text()",PageProcessType.XPath,author);
-            putItem(page,author);
+            PageItem content = new PageItem("content", PageItem.PageItemType.STRING, true, false);
+            content = extratBy(page,"//div[@id=\"endText\"]",PageProcessType.XPath,content);
+            page.setMultiplePageItemName("content");
+            putItem(page,content);
         }
     }
 
@@ -52,10 +57,10 @@ public class SubPagesTest extends DefaultPageProcessor implements TestableProces
 
     @Test
     public void testExtractContentUrl() throws Exception{
-        PageProcessor processor = new SubPagesTest();
+        PageProcessor processor = new MultiplePagesTest();
         Spider.create(processor)
                 .addPipeline(new TestCallabckPipeline())
-                .addStartPage(new Page("ximalaya339173.html").setTest(true)) //网上url: http://www.ximalaya.com/20115042/album/339173
+                .addStartPage(new Page("163news_0.html").setTest(true)) //网上url: http://news.163.com/13/0802/05/958I1E330001124J.html
                 .run();
 
 
@@ -63,9 +68,8 @@ public class SubPagesTest extends DefaultPageProcessor implements TestableProces
         TestableProcessor testableProcessor = (TestableProcessor) processor;
         PageItems pageItems = testableProcessor.getPage().getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(2);
-        assertThat(pageItems.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("玛格丽特的秘密：大鹏讲故事");
-        assertThat(pageItems.getPageItemByName("author").getItemValue().toString()).isEqualToIgnoringCase("大鹏讲故事");
+        assertThat(pageItems.getItems().size()).isEqualTo(1);
+        assertThat(pageItems.getPageItemByName("content").getItemValue().toString().length()).isGreaterThan(7000);
     }
 
     @Override

@@ -58,6 +58,15 @@ public class PageItems {
         return null;
     }
 
+    public PageItems setPageItemValue(String name, Object value){
+        for(PageItem item : items){
+            if(item.getItemName().equals(name)){
+                item.setItemValue(value);
+            }
+        }
+        return this;
+    }
+
     public String toJson() {
         StringBuilder json = new StringBuilder();
         json.append("<$PageItems> <$items>");

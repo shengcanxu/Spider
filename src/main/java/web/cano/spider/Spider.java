@@ -5,10 +5,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.downloader.Downloader;
 import web.cano.spider.downloader.HttpClientDownloader;
-import web.cano.spider.pipeline.AlignMultiVlauesPipeline;
-import web.cano.spider.pipeline.CombineSubPagesPipeline;
-import web.cano.spider.pipeline.ConsolePipeline;
-import web.cano.spider.pipeline.Pipeline;
+import web.cano.spider.pipeline.*;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.QueueScheduler;
 import web.cano.spider.scheduler.Scheduler;
@@ -214,6 +211,7 @@ public class Spider implements Runnable, Task {
             this.downloader = new HttpClientDownloader();
         }
         pipelines.add(new AlignMultiVlauesPipeline());
+        pipelines.add(new CombineMultiPagesPipeline());
         pipelines.add(new CombineSubPagesPipeline());
         pipelines.add(new ConsolePipeline());
 
