@@ -361,11 +361,15 @@ public class Spider implements Runnable, Task {
     }
 
     protected void processRequest(Request request) {
+        Page page;
         if(request.getPage().getDepth() >= site.getMaxDeep()){
+            page = request.getPage();    //超出MaxDeep范围的不下载内容,仅仅做一次process，为了获得内容
+            pageProcessor.process(page);
             return;
+        }else{
+            page = downloader.download(request, this);
         }
 
-        Page page = downloader.download(request, this);
         if (page == null) {
             sleep(site.getSleepTime());
             onError(request);
