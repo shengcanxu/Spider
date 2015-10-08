@@ -7,7 +7,9 @@ import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
 
+import java.io.File;
 import java.io.FileOutputStream;
+import java.io.IOException;
 
 /**
  * Created by cano on 2015/5/28.
@@ -18,13 +20,18 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
     private FileOutputStream fos;
 
     public DouguocaidanUrls() {
+        try {
+            fos = new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     private Site site = Site
             .me()
             .setDomain("douguo.com")
             .addHeader("Referer", "http://www.douguo.com/")
-            .setDeepFirst(false)
+            .setDeepFirst(true)
             .setMaxDeep(2)
             .setSleepTime(3000)
             .setUserAgent(
@@ -39,6 +46,14 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             case 1:
                 parseUrls(page,"//*[@id=\"main\"]//h3/a/@href",PageProcessType.XPath);
                 parseNextUrls(page,"//div[@class=\"pagination\"]/span/a/@href",PageProcessType.XPath);
+                break;
+            case 2:
+                try {
+                    String c = page.getUrl() + "\n";
+                    fos.write(c.getBytes());
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
                 break;
         }
     }

@@ -436,11 +436,11 @@ public class Spider implements Runnable, Task {
 
     public Spider addPagesToScheduler(List<Page> pages, List<Page> nextPages){
         if(site.isDeepFirst()){
-            for(int i=pages.size()-1; i>=0; i--){
-                scheduler.push(pages.get(i),this);
-            }
             for(int i=nextPages.size()-1; i>=0; i--){
                 scheduler.push(nextPages.get(i),this);
+            }
+            for(int i=pages.size()-1; i>=0; i--){
+                scheduler.push(pages.get(i),this);
             }
 
         }else{
