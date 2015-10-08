@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 用于在子页面上爬取内容，并将内容汇总到总页上
+ */
 public class CombineSubPagesPipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 

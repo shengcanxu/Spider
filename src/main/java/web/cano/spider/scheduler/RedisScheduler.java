@@ -103,6 +103,17 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
     }
 
     @Override
+    protected void pushToHeadWhenNoDuplicate(Page page, Task task) {
+        Jedis jedis = pool.getResource();
+        try{
+            jedis.lpush(getQueueKey(task), page.toJson());
+        } finally {
+            pool.returnResource(jedis);
+        }
+    }
+
+
+    @Override
     public Page poll(Task task){
         Jedis jedis = pool.getResource();
         try{

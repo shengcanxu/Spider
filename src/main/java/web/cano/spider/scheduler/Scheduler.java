@@ -25,6 +25,14 @@ public interface Scheduler {
     public void push(Page page, Task task);
 
     /**
+     * add a url to fetch to queue head
+     *
+     * @param page
+     * @param task
+     */
+    public void pushToHead(Page page, Task task);
+
+    /**
      * get an url to crawl
      *
      * @param task the task of spider

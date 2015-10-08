@@ -209,7 +209,6 @@ public class Page {
     public void addTargetPage(Page page) {
         synchronized (targetPages) {
             page.setFatherPage(this);
-            page.setDepth(this.getDepth()+1);
             targetPages.add(page);
         }
     }
@@ -218,6 +217,17 @@ public class Page {
         synchronized (nextPages) {
             page.setFatherPage(this);
             nextPages.add(page);
+        }
+    }
+
+    public void addNextPages(List<String> pageUrls) {
+        for (String s : pageUrls) {
+            if (StringUtils.isBlank(s) || s.equals("#") || s.startsWith("javascript:")) {
+                continue;
+            }
+            if (!isTest) s = UrlUtils.canonicalizeUrl(s, url.toString());
+            Page page = new Page(s, this);
+            addNextPage(page);
         }
     }
 

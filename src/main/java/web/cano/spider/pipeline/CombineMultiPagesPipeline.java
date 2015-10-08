@@ -12,6 +12,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * 用于爬取分页内容，合并多个分页到一个总页上
+ */
 public class CombineMultiPagesPipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 

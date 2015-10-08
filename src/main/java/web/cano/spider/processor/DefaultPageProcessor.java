@@ -31,6 +31,16 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         Selector selector = getSelector(pattern,type);
         List<String> urls = page.getHtml().selectDocumentForList(selector);
         page.addTargetPages(urls);
+        page.setSkip(true);
+        return urls.size();
+    }
+
+    //在分页中获取下一步要爬取的urls
+    protected int parseNextUrls(Page page, String pattern, PageProcessType type ){
+        Selector selector = getSelector(pattern,type);
+        List<String> urls = page.getHtml().selectDocumentForList(selector);
+        page.addNextPages(urls);
+        page.setSkip(true);
         return urls.size();
     }
 

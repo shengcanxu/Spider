@@ -8,7 +8,7 @@ import web.cano.spider.utils.BaseDAO;
 import java.util.List;
 
 /**
- * Created by canoxu on 2015/1/20.
+ * 用于存储内容到mysql
  */
 public class MysqlPipeline implements Pipeline {
 

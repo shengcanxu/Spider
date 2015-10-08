@@ -412,13 +412,16 @@ public class Spider implements Runnable, Task {
                 logger.info(page1.getUrl());
             }
 
-            addPagesToScheduler(pages);
-            addPagesToScheduler(nextPages);
+            addPagesToScheduler(pages,nextPages);
         }
     }
 
     public Spider addStartPage(Page startPage){
         return addPageToScheduler(startPage);
+    }
+
+    public Spider addStartPages(List<Page> startPages){
+        return addPagesToScheduler(startPages,null);
     }
 
     public Spider addPageToScheduler(Page page) {
@@ -427,12 +430,24 @@ public class Spider implements Runnable, Task {
         return this;
     }
 
-    public Spider addPagesToScheduler(List<Page> pages){
-        for(int i=0; i<pages.size(); i++){
-            scheduler.push(pages.get(i), this);
+    public Spider addPagesToScheduler(List<Page> pages, List<Page> nextPages){
+        if(site.isDeepFirst()){
+            for(int i=pages.size()-1; i>=0; i--){
+                scheduler.push(pages.get(i),this);
+            }
+            for(int i=nextPages.size()-1; i>=0; i--){
+                scheduler.push(nextPages.get(i),this);
+            }
+
+        }else{
+            for(int i=0; i<pages.size(); i++){
+                scheduler.push(pages.get(i), this);
+            }
+            for(int i=nextPages.size()-1; i>=0; i--){
+                scheduler.pushToHead(nextPages.get(i),this);
+            }
         }
 
-        //TODO:在scheduler里面实现深度优先还是宽度优先
         signalNewUrl();
         return this;
     }

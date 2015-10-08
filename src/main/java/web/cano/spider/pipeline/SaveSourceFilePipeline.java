@@ -10,7 +10,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
+/**
+ * 用于保存所爬取的程序的源文件
+ */
 public class SaveSourceFilePipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 

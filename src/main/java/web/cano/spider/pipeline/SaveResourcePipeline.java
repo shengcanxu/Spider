@@ -11,7 +11,9 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-
+/**
+ * 用于保存资源文件（图片等）
+ */
 public class SaveResourcePipeline implements Pipeline {
     Logger logger = LoggerFactory.getLogger(getClass());
 
