@@ -53,6 +53,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
         if(args.length > 0){
             threadNum = Integer.parseInt(args[0]);
         }
+        System.out.println("thread NO.: " + threadNum);
 
         PageProcessor processor = new DouguocaidanUrls();
         Spider spider = Spider.create(processor);
