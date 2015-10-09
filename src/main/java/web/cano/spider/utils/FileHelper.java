@@ -11,14 +11,12 @@ public class FileHelper {
 
     /**
      * 从文件中读取内容到list
-     * @param filePath
      * @return
      */
-    public static List<String> readUrlsFromFile(String filePath){
+    public static List<String> readUrlsFromFile(File file){
         List<String> urls = new ArrayList<String>();
         try {
-            File fin = new File(filePath);
-            FileInputStream fis = new FileInputStream(fin);
+            FileInputStream fis = new FileInputStream(file);
             BufferedReader br = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
 
             String line = null;
@@ -39,11 +37,9 @@ public class FileHelper {
     /**
      * 将list内容写入到file
      * @param urls
-     * @param filePath
      */
-    public static void writeUrlsToFile(List<String> urls, String filePath){
+    public static void writeUrlsToFile(List<String> urls, File file){
         try{
-            File file = new File(filePath);
             FileOutputStream fos = new FileOutputStream(file);
             for(String url : urls){
                 url = url + "\n";
@@ -57,11 +53,10 @@ public class FileHelper {
 
     /**
      * 去除列表中的重复项
-     * @param filePath
      */
-    public static void removeDuplicate(String filePath){
+    public static void removeDuplicate(File file){
         System.out.println("read content from file");
-        List<String> urls = readUrlsFromFile(filePath);
+        List<String> urls = readUrlsFromFile(file);
 
         System.out.println("\nremoving duplicate\n");
         Set<String> set  = new HashSet<String>();
@@ -70,23 +65,21 @@ public class FileHelper {
         newUrlsList.addAll(set);
 
         System.out.println("\nwrite content to file\n");
-        writeUrlsToFile(newUrlsList, filePath);
+        writeUrlsToFile(newUrlsList, file);
     }
 
     /**
      * 比较两个文件的差异， LIst[0]存储from有to没有的， List[1]存储from没有to有的
-     * @param fromFilePath
-     * @param toFilePath
      * @return
      */
-    public static List<String>[] diffFile(String fromFilePath, String toFilePath){
+    public static List<String>[] diffFile(File fromFile, File toFile){
         List<String>[] results = new List[2];
         List<String> fromHasList = new ArrayList<String>();
         List<String> toHasList = new ArrayList<String>();
 
         System.out.println("reading from files\n");
-        List<String> from = readUrlsFromFile(fromFilePath);
-        List<String> to = readUrlsFromFile(toFilePath);
+        List<String> from = readUrlsFromFile(fromFile);
+        List<String> to = readUrlsFromFile(toFile);
         List<String> toLinkedList = new LinkedList<String>();
         toLinkedList.addAll(to);
 
@@ -129,9 +122,12 @@ public class FileHelper {
         return results;
     }
 
-    public static void sortFile(String filePath){
+    /**
+     * 将文件里面的内容排序
+     */
+    public static void sortFile(File file){
         System.out.println("reading from files\n");
-        List<String> list = readUrlsFromFile(filePath);
+        List<String> list = readUrlsFromFile(file);
 
         System.out.println("sorting\n");
         list.sort(new Comparator<String>() {
@@ -142,11 +138,7 @@ public class FileHelper {
         });
 
         System.out.println("writing from files\n");
-        writeUrlsToFile(list,filePath);
-    }
-
-    public static void main(String[] args) {
-        FileHelper.sortFile("D:\\software\\redis\\data\\douguourls.txt");
+        writeUrlsToFile(list,file);
     }
 
 }
