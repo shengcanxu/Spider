@@ -25,6 +25,13 @@ public interface Scheduler {
     public void push(Page page, Task task);
 
     /**
+     * 不管是否重复都加到队列
+     * @param page
+     * @param task
+     */
+    public void forcePush(Page page, Task task);
+
+    /**
      * add a url to fetch to queue head
      *
      * @param page

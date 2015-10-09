@@ -259,7 +259,7 @@ public class Spider implements Runnable, Task {
                         }
                         logger.info("restart un-parsed urls");
                         for(Page p : leftPages){
-                            scheduler.push(p,this);
+                            scheduler.forcePush(p,this);
                         }
                         continue;
                     }

@@ -38,6 +38,12 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
     }
 
     @Override
+    public void forcePush(Page page, Task task){
+        logger.info("force to add to queue");
+        pushWhenNoDuplicate(page,task);
+    }
+
+    @Override
     public void pushToHead(Page page, Task task){
         logger.trace("get a candidate url {}", page.getUrl());
         if (!duplicatedRemover.isDuplicate(page, task) ) {
