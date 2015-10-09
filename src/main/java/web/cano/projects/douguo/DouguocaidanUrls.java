@@ -3,6 +3,7 @@ package web.cano.projects.douguo;
 import web.cano.spider.Page;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
+import web.cano.spider.pipeline.SaveSourceFilePipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
@@ -73,6 +74,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
         PageProcessor processor = new DouguocaidanUrls();
         Spider spider = Spider.create(processor);
         spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),false))
+                .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/sourcefile/"))
                 .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
                 .thread(threadNum).run();
     }
