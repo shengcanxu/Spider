@@ -1,8 +1,7 @@
 package web.cano.spider.utils;
 
 import java.io.*;
-import java.util.ArrayList;
-import java.util.List;
+import java.util.*;
 
 /**
  * Created by cano on 2015/5/31.tring
@@ -15,7 +14,7 @@ public class FileHelper {
      * @param filePath
      * @return
      */
-    public static List<String> getUrlsFromFile(String filePath){
+    public static List<String> readUrlsFromFile(String filePath){
         List<String> urls = new ArrayList<String>();
         try {
             File fin = new File(filePath);
@@ -28,12 +27,126 @@ public class FileHelper {
                 urls.add(line);
             }
             br.close();
+            fis.close();
 
         } catch (IOException e) {
             e.printStackTrace();
         }
 
         return urls;
+    }
+
+    /**
+     * 将list内容写入到file
+     * @param urls
+     * @param filePath
+     */
+    public static void writeUrlsToFile(List<String> urls, String filePath){
+        try{
+            File file = new File(filePath);
+            FileOutputStream fos = new FileOutputStream(file);
+            for(String url : urls){
+                url = url + "\n";
+                fos.write(url.getBytes());
+            }
+            fos.close();
+        }catch (IOException e){
+            e.printStackTrace();
+        }
+    }
+
+    /**
+     * 去除列表中的重复项
+     * @param filePath
+     */
+    public static void removeDuplicate(String filePath){
+        System.out.println("read content from file");
+        List<String> urls = readUrlsFromFile(filePath);
+
+        System.out.println("\nremoving duplicate\n");
+        Set<String> set  = new HashSet<String>();
+        set.addAll(urls);
+        List<String> newUrlsList = new ArrayList<String>();
+        newUrlsList.addAll(set);
+
+        System.out.println("\nwrite content to file\n");
+        writeUrlsToFile(newUrlsList, filePath);
+    }
+
+    /**
+     * 比较两个文件的差异， LIst[0]存储from有to没有的， List[1]存储from没有to有的
+     * @param fromFilePath
+     * @param toFilePath
+     * @return
+     */
+    public static List<String>[] diffFile(String fromFilePath, String toFilePath){
+        List<String>[] results = new List[2];
+        List<String> fromHasList = new ArrayList<String>();
+        List<String> toHasList = new ArrayList<String>();
+
+        System.out.println("reading from files\n");
+        List<String> from = readUrlsFromFile(fromFilePath);
+        List<String> to = readUrlsFromFile(toFilePath);
+        List<String> toLinkedList = new LinkedList<String>();
+        toLinkedList.addAll(to);
+
+        System.out.println("sorting...\n");
+        from.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+        toLinkedList.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+
+        System.out.println("\ndoing diff...\n");
+        for(int i=0; i<from.size(); i++){
+            String str = from.get(i);
+            int j;
+            int len = toLinkedList.size();
+            for(j=0; j<len; j++){
+                if(str.equals(toLinkedList.get(j))){
+                    toLinkedList.remove(j);
+                    System.out.println("equal");
+                    break;
+                }
+            }
+            if(j>=len){
+                System.out.println("not equal");
+                fromHasList.add(str);
+            }
+        }
+        toHasList.addAll(toLinkedList);
+
+        results[0] = fromHasList;
+        results[1] = toHasList;
+        System.out.println("\ndiff finished\n");
+        return results;
+    }
+
+    public static void sortFile(String filePath){
+        System.out.println("reading from files\n");
+        List<String> list = readUrlsFromFile(filePath);
+
+        System.out.println("sorting\n");
+        list.sort(new Comparator<String>() {
+            @Override
+            public int compare(String o1, String o2) {
+                return o1.compareTo(o2);
+            }
+        });
+
+        System.out.println("writing from files\n");
+        writeUrlsToFile(list,filePath);
+    }
+
+    public static void main(String[] args) {
+        FileHelper.sortFile("D:\\software\\redis\\data\\douguourls.txt");
     }
 
 }
