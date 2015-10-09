@@ -8,7 +8,7 @@ import java.util.List;
  * Created by cano on 2015/5/31.tring
  * 从文件获取连接列表等操作
  */
-public class FileGetter {
+public class FileHelper {
 
     /**
      * 从文件中读取内容到list

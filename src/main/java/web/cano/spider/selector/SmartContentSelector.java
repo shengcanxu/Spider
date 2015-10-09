@@ -1,7 +1,5 @@
 package web.cano.spider.selector;
 
-import web.cano.spider.utils.Experimental;
-
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -13,7 +11,7 @@ import java.util.List;
  * @since 0.4.1
  *
  */
-@Experimental
+
 public class SmartContentSelector implements Selector {
 
     public SmartContentSelector() {
