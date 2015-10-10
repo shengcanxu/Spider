@@ -19,6 +19,8 @@ public class SaveResourcePipeline implements Pipeline {
 
     private String filePath;
 
+    private boolean separateFolder = false;
+
     private SaveResourcePipeline() {
     }
 
@@ -40,12 +42,19 @@ public class SaveResourcePipeline implements Pipeline {
         String url = page.getUrl();
         String fileName = DigestUtils.md5Hex(url) +  url.substring(url.lastIndexOf("."));
 
-        saveFile(fileName,bytes);
-    }
+        String path;
+        if(separateFolder){
+            path = filePath +  fileName;
+        }else{
+            String folderName = page.getUrl().replace(".", "").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
+            if(folderName.length() >=300){
+                folderName = folderName.substring(folderName.length()-300,folderName.length());
+            }
+            path = filePath + folderName + "/" + fileName;
+        }
 
-    private void saveFile(String fileName, byte[] bytes){
         try {
-            File storeFile = new File(filePath + fileName);
+            File storeFile = new File(path);
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
             output.write(bytes);
 
