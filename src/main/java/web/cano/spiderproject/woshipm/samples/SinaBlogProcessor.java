@@ -1,7 +1,6 @@
 package web.cano.spiderproject.woshipm.samples;
 
 import web.cano.spider.Page;
-import web.cano.spider.PageItems;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.MysqlPipeline;
@@ -33,15 +32,15 @@ public class SinaBlogProcessor extends DefaultPageProcessor {
             //文章页
         } else {
             PageItem title = new PageItem("title",PageItem.PageItemType.STRING,true,false);
-            title = extratBy(page,"//div[@class='articalTitle']/h2/text()",PageProcessType.XPath,title);
+            title = extractBy(page, "//div[@class='articalTitle']/h2/text()", PageProcessType.XPath, title);
             putItem(page, title);
 
             PageItem tag = new PageItem("tag",PageItem.PageItemType.STRING,true,false);
-            tag = extratBy(page,"//h3/a/text()",PageProcessType.XPath,tag);
+            tag = extractBy(page, "//h3/a/text()", PageProcessType.XPath, tag);
             putItem(page, tag);
 
             PageItem date = new PageItem("date", PageItem.PageItemType.STRING,true, false);
-            date = extratBy(page, "//div[@id='articlebody']//span[@class='time SG_txtc']/text()", PageProcessType.XPath,date);
+            date = extractBy(page, "//div[@id='articlebody']//span[@class='time SG_txtc']/text()", PageProcessType.XPath, date);
             date = formatValue(date,"\\((.*)\\)");
             putItem(page,date);
         }

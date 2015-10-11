@@ -36,11 +36,11 @@ public class MultiValueExtractTest extends DefaultPageProcessor implements Testa
     @Override
     public void process(Page page) {
         PageItem title = new PageItem("title", PageItem.PageItemType.STRING,true,true);
-        title = extratBy(page,"//span[@class=\"atc_title\"]/a/text()",PageProcessType.XPath,title);
+        title = extractBy(page, "//span[@class=\"atc_title\"]/a/text()", PageProcessType.XPath, title);
         putItem(page, title);
 
         PageItem url = new PageItem("url",PageItem.PageItemType.STRING,true,true);
-        url = extratBy(page, "//span[@class=\"atc_title\"]/a/@href", PageProcessType.XPath, url);
+        url = extractBy(page, "//span[@class=\"atc_title\"]/a/@href", PageProcessType.XPath, url);
         putItem(page, url);
     }
 

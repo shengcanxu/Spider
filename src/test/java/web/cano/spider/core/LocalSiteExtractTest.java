@@ -33,7 +33,7 @@ public class LocalSiteExtractTest extends DefaultPageProcessor implements Testab
         putItem(page,pageUrl);
 
         PageItem title = new PageItem("title", PageItem.PageItemType.STRING,true,false);
-        title = extratBy(page, "//*[@id=\"page_cm_id\"]/text()", PageProcessType.XPath, title);
+        title = extractBy(page, "//*[@id=\"page_cm_id\"]/text()", PageProcessType.XPath, title);
         putItem(page,title);
     }
 

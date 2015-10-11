@@ -51,7 +51,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
     }
 
     //爬取一个字段
-    protected PageItem extratBy(Page page, String pattern, PageProcessType type,PageItem item){
+    protected PageItem extractBy(Page page, String pattern, PageProcessType type, PageItem item){
         if(item == null) return null;
 
         Selector selector = getSelector(pattern,type);

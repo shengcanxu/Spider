@@ -40,11 +40,11 @@ public class MultiplePagesTest extends DefaultPageProcessor implements TestableP
             page.setMultiplePageItemName("content");
 
             PageItem content = new PageItem("content", PageItem.PageItemType.STRING, true, false);
-            content = extratBy(page,"//div[@id=\"endText\"]",PageProcessType.XPath,content);
+            content = extractBy(page, "//div[@id=\"endText\"]", PageProcessType.XPath, content);
             putItem(page,content);
         }else{
             PageItem content = new PageItem("content", PageItem.PageItemType.STRING, true, false);
-            content = extratBy(page,"//div[@id=\"endText\"]",PageProcessType.XPath,content);
+            content = extractBy(page, "//div[@id=\"endText\"]", PageProcessType.XPath, content);
             page.setMultiplePageItemName("content");
             putItem(page,content);
         }

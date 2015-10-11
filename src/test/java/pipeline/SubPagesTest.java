@@ -36,11 +36,11 @@ public class SubPagesTest extends DefaultPageProcessor implements TestableProces
             page.addTargetPage(subPage);
 
             PageItem title = new PageItem("title", PageItem.PageItemType.STRING, true, false);
-            title = extratBy(page,"//*[@id=\"mainbox\"]//h1/text()",PageProcessType.XPath,title);
+            title = extractBy(page, "//*[@id=\"mainbox\"]//h1/text()", PageProcessType.XPath, title);
             putItem(page,title);
         }else{
             PageItem author = new PageItem("author", PageItem.PageItemType.STRING, true, false);
-            author = extratBy(page,"//*[@id=\"timelinePage\"]//span[@class=\"user_name\"]/h1/text()",PageProcessType.XPath,author);
+            author = extractBy(page, "//*[@id=\"timelinePage\"]//span[@class=\"user_name\"]/h1/text()", PageProcessType.XPath, author);
             putItem(page,author);
         }
     }
