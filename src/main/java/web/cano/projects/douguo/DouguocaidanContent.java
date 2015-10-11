@@ -1,6 +1,7 @@
 package web.cano.projects.douguo;
 
 import web.cano.spider.Page;
+import web.cano.spider.PageItem;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.SaveSourceFilePipeline;
@@ -20,11 +21,19 @@ public class DouguocaidanContent extends DefaultPageProcessor {
             .addHeader("Referer", "http://www.douguo.com/")
             .setDeepFirst(false)
             .setSleepTime(3000)
+            .setLocalSiteCopyLocation("D:\\software\\redis\\data\\contentsourcefile\\")
             .setUserAgent(
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
     @Override
     public void process(Page page) {
+        PageItem pageUrl = new PageItem("pageUrl", PageItem.PageItemType.STRING,true,false);
+        pageUrl = extractByUrl(page,".*",pageUrl);
+        putItem(page,pageUrl);
+
+        PageItem title = new PageItem("title", PageItem.PageItemType.STRING,true,false);
+        title = extratBy(page,"//*[@id=\"page_cm_id\"]/text()",PageProcessType.XPath,title);
+        putItem(page,title);
 
     }
 
@@ -40,11 +49,12 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         }
         System.out.println("thread NO.: " + threadNum);
 
-        PageProcessor processor = new DouguocaidanUrls();
-        Spider spider = Spider.create(processor);
-        spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),false))
-                .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/sourcefile/"))
-                .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
+        PageProcessor processor = new DouguocaidanContent();
+        Spider.create(processor)
+                .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
+                .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/contentsourcefile/"))
+                //.addPipeline(new MysqlPipeline(true))
+                .addStartPage(new Page("http://www.douguo.com/cookbook/1257340.html"))
                 .thread(threadNum).run();
     }
 

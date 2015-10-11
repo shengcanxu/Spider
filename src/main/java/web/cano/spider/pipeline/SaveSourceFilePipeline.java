@@ -33,7 +33,7 @@ public class SaveSourceFilePipeline implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
-        if (page.isResource()) return;
+        if (page.isResource() || task.getSite().isLocalSite()) return;
 
         String rawText = page.getRawText();
         String url = page.getUrl();

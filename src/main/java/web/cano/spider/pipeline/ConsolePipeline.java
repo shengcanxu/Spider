@@ -45,7 +45,7 @@ public class ConsolePipeline implements Pipeline {
     private void printAsSingleRecord(Page page, String separator){
         PageItems pageItems = page.getPageItems();
         StringBuilder sb = new StringBuilder();
-        sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");
+        sb.append("get page: " + pageItems.getPage().getUrl() + "\n");
         for (PageItem item : pageItems.getItems()) {
             if(item.isMultiple()){
                 List<String> list = (List<String>) item.getItemValue();

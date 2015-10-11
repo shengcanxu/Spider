@@ -21,14 +21,12 @@ import org.jsoup.nodes.Element;
 import org.jsoup.select.Elements;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import web.cano.spider.Page;
-import web.cano.spider.Request;
-import web.cano.spider.Site;
-import web.cano.spider.Task;
+import web.cano.spider.*;
 import web.cano.spider.utils.HttpConstant;
 import web.cano.spider.utils.UrlUtils;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.Map;
@@ -88,6 +86,29 @@ public class HttpClientDownloader extends AbstractDownloader {
         return request.getPage();
     }
 
+    private Page getLocalSitePage(Request request,String localSitePath){
+        String url = request.getPage().getUrl();
+        String fileName = url.replace(".","").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
+        if(fileName.length() >=300){
+            fileName = fileName.substring(fileName.length()-300,fileName.length());
+        }
+
+        File file = new File(localSitePath + fileName);
+        if(file.exists()){
+            try {
+                String content = FileUtils.readFileToString(file);
+                request.getPage().setRawText(content);
+                return request.getPage();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            return null;
+        }else{
+            logger.warn("no such page for\t" + request.getPage().getUrl());
+            return null;
+        }
+    }
+
     @Override
     public Page download(Request request, Task task) {
         if(request.getPage().isTest()){
@@ -98,6 +119,10 @@ public class HttpClientDownloader extends AbstractDownloader {
         if (task != null) {
             site = task.getSite();
         }
+        if(site.isLocalSite()){
+            return getLocalSitePage(request,site.getLocalSiteCopyLocation());
+        }
+
         Set<Integer> acceptStatCode;
         String charset = null;
         Map<String, String> headers = null;

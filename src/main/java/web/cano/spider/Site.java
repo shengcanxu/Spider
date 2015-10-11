@@ -54,9 +54,9 @@ public class Site {
     private int maxDeep = 1000;
 
     /**
-     * 为false的时候，不爬取内容，只是保存连接到数据库
+     * 路径不为空是，不爬去网络上的网站页面，而是爬去保存在路径上的网站的拷贝
      */
-    private boolean getContent = true;
+    private String localSiteCopyLocation;
 
     /**
      * 爬取到多个结果后的分隔符
@@ -493,12 +493,16 @@ public class Site {
         return  this;
     }
 
-    public boolean isGetContent() {
-        return getContent;
+    public boolean isLocalSite(){
+        return localSiteCopyLocation != null && localSiteCopyLocation.length() >0 ;
     }
 
-    public Site setGetContent(boolean getContent) {
-        this.getContent = getContent;
+    public String getLocalSiteCopyLocation() {
+        return localSiteCopyLocation;
+    }
+
+    public Site setLocalSiteCopyLocation(String localSiteCopyLocation) {
+        this.localSiteCopyLocation = localSiteCopyLocation;
         return this;
     }
 }

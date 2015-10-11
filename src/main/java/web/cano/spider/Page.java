@@ -146,7 +146,7 @@ public class Page {
             if(isTest){
                 html = new Html(rawText);
             }else {
-                html = new Html(UrlUtils.fixAllRelativeHrefs(rawText, request.getUrl()));
+                html = new Html(UrlUtils.fixAllRelativeHrefs(rawText, getUrl()));
             }
         }
         return html;

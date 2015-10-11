@@ -13,14 +13,6 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
 
     public static enum PageProcessType {XPath,Regex,JsonPath,Css}
 
-    //从url中获得内容
-    protected int extractByUrl(Page page, String regex){
-        RegexSelector selector = new RegexSelector(regex);
-        String url = selector.select(page.getUrl().toString());
-        page.addTargetPage(url);
-        return 1;
-    }
-
     //判断page的url是否符合urlRegex规范
     protected boolean isPageMatchByUrl(Page page, String urlRegex){
         return new PlainText(page.getUrl()).regex(urlRegex).match();
@@ -48,6 +40,14 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         if(item != null && page != null) {
             page.getPageItems().getItems().add(item);
         }
+    }
+
+    //从url中获得内容
+    protected PageItem extractByUrl(Page page, String regex,PageItem item){
+        RegexSelector selector = new RegexSelector(regex);
+        String url = selector.select(page.getUrl().toString());
+        item.setItemValue(url);
+        return item;
     }
 
     //爬取一个字段
