@@ -19,7 +19,11 @@ public class SaveResourcePipeline implements Pipeline {
 
     private String filePath;
 
+    //是否将不同页面的资源存储在不同的文件夹
     private boolean separateFolder = false;
+
+    //如果存储的文件存在，true就更新，false就算了
+    private boolean refreshStoreFile = false;
 
 
     private SaveResourcePipeline() {
@@ -37,6 +41,11 @@ public class SaveResourcePipeline implements Pipeline {
 
     public SaveResourcePipeline setSeparateFolder(boolean separateFolder) {
         this.separateFolder = separateFolder;
+        return this;
+    }
+
+    public SaveResourcePipeline setRefreshStoreFile(boolean refreshStoreFile) {
+        this.refreshStoreFile = refreshStoreFile;
         return this;
     }
 
@@ -73,6 +82,10 @@ public class SaveResourcePipeline implements Pipeline {
 
         try {
             File storeFile = new File(path);
+            if(storeFile.exists() && ! refreshStoreFile){
+                return;
+            }
+
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
             output.write(bytes);
 

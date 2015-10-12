@@ -35,6 +35,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             .setDeepFirst(true)
             .setMaxDeep(2)
             .setSleepTime(3000)
+            .setLocalSiteCopyLocation("D:\\software\\redis\\data\\sourcefile\\")
             .setUserAgent(
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 

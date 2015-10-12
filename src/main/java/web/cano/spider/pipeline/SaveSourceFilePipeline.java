@@ -18,7 +18,15 @@ public class SaveSourceFilePipeline implements Pipeline {
 
     private String filePath;
 
+    //如果存储的文件存在，true就更新，false就算了
+    private boolean refreshStoreFile = false;
+
     private SaveSourceFilePipeline() {
+    }
+
+    public SaveSourceFilePipeline setRefreshStoreFile(boolean refreshStoreFile) {
+        this.refreshStoreFile = refreshStoreFile;
+        return this;
     }
 
     public SaveSourceFilePipeline(String filePath) {
@@ -35,19 +43,19 @@ public class SaveSourceFilePipeline implements Pipeline {
     public void process(Page page, Task task) {
         if (page.isResource() || task.getSite().isLocalSite()) return;
 
-        String rawText = page.getRawText();
+        String content = page.getRawText();
         String url = page.getUrl();
         String fileName = url.replace(".","").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
         if(fileName.length() >=300){
             fileName = fileName.substring(fileName.length()-300,fileName.length());
         }
 
-        saveFile(fileName,rawText);
-    }
-
-    private void saveFile(String fileName, String content){
         try {
             File storeFile = new File(filePath + fileName);
+            if(storeFile.exists() && !refreshStoreFile){
+                return;
+            }
+
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
             output.write(content.getBytes());
 
