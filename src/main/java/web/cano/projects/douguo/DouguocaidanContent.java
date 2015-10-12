@@ -5,6 +5,7 @@ import web.cano.spider.PageItem;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.MysqlPipeline;
+import web.cano.spider.pipeline.SaveResourcePipeline;
 import web.cano.spider.pipeline.SaveSourceFilePipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
@@ -27,12 +28,14 @@ public class DouguocaidanContent extends DefaultPageProcessor {
             .addHeader("Referer", "http://www.douguo.com/")
             .setDeepFirst(false)
             .setSleepTime(3000)
-            .setLocalSiteCopyLocation("D:\\software\\redis\\data\\contentsourcefile\\")
+            //.setLocalSiteCopyLocation("D:\\software\\redis\\data\\contentsourcefile\\")
             .setUserAgent(
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
     @Override
     public void process(Page page) {
+        if(page.isResource()) return;
+
         PageItem pageUrl = new PageItem("pageUrl", PageItem.PageItemType.STRING,true,false);
         pageUrl = extractByUrl(page,".*",pageUrl);
         putItem(page,pageUrl);
@@ -40,6 +43,7 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         PageItem picutre = new PageItem("picutre", PageItem.PageItemType.STRING, true, false);
         picutre = extractBy(page, "//*[@id=\"main\"]//div[@class=\"bokpic\"]//a/@href", PageProcessType.XPath, picutre);
         putItem(page, picutre);
+        downloadResources(page,picutre);
 
         PageItem title = new PageItem("title", PageItem.PageItemType.STRING,true,false);
         title = extractBy(page, "//*[@id=\"page_cm_id\"]/text()", PageProcessType.XPath, title);
@@ -96,8 +100,9 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         putItem(page, stepContent);
 
         PageItem stepImage = new PageItem("stepImage", PageItem.PageItemType.TEXT, true, true);
-        stepImage = extractBy(page, "//*[@id=\"main\"]//div[@class=\"step clearfix\"]/div//img/@src", PageProcessType.XPath,stepImage);
+        stepImage = extractBy(page, "//*[@id=\"main\"]//div[@class=\"step clearfix\"]/div//a/@href", PageProcessType.XPath,stepImage);
         putItem(page, stepImage);
+        downloadResources(page,stepImage);
 
         PageItem author = new PageItem("author", PageItem.PageItemType.STRING, true, false);
         author = extractBy(page, "//*[@id=\"main\"]/div[@class=\"reright\"]//h4/a[1]/text()", PageProcessType.XPath, author);
@@ -126,7 +131,7 @@ public class DouguocaidanContent extends DefaultPageProcessor {
                 Html html = new Html(str);
                 String name = html.selectDocument(new XpathSelector("//span[1]/allText()"));
                 String shuliang = html.selectDocument(new XpathSelector("//span[2]/allText()"));
-                if(name != null) result.add("<name>" + name + "</name>" + "<shuliang>" + shuliang + "</shuliang>");
+                if(name != null) result.add(name + "=" + shuliang );
             }
         }
 
@@ -148,7 +153,7 @@ public class DouguocaidanContent extends DefaultPageProcessor {
                 Html html = new Html(str);
                 String name = html.selectDocument(new XpathSelector("//span[1]/allText()"));
                 String shuliang = html.selectDocument(new XpathSelector("//span[2]/allText()"));
-                if(name != null) result.add("<name>" + name + "</name>" + "<shuliang>" + shuliang + "</shuliang>");
+                if(name != null) result.add(name + "=" + shuliang);
             }
         }
 
@@ -171,6 +176,7 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         Spider.create(processor)
                 .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/contentsourcefile/"))
+                .addPipeline(new SaveResourcePipeline("D:/software/redis/data/contentresource/").setSeparateFolder(true))
                 .addPipeline(new MysqlPipeline(true))
                 .addStartPage(new Page("http://www.douguo.com/cookbook/1257340.html"))
                 .thread(threadNum).run();

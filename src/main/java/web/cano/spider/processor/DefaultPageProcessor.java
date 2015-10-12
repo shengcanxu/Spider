@@ -1,9 +1,11 @@
 package web.cano.spider.processor;
 
+import org.apache.commons.codec.digest.DigestUtils;
 import web.cano.spider.Page;
 import web.cano.spider.PageItem;
 import web.cano.spider.selector.*;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -34,6 +36,45 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         page.addNextPages(urls);
         page.setSkip(true);
         return urls.size();
+    }
+
+    private String getResourceFileName(String url){
+        if(url.contains("?")){
+            url = url.substring(0,url.indexOf('?'));
+        }
+        int pos = url.lastIndexOf(".");
+        if(url.length() - pos >= 6){
+            return DigestUtils.md5Hex(url);
+        }else{
+            return DigestUtils.md5Hex(url) + url.substring(pos);
+        }
+    }
+
+    //下载资源文件并保存资源文件的连接
+    protected  void downloadResources(Page page, PageItem pageItem){
+        Object urlObject = pageItem.getItemValue();
+        if(urlObject instanceof List){
+            List<String> urls = (List<String>) urlObject;
+            List<String> itemValues = new ArrayList<String>();
+            for(String url : urls){
+                String fileName = getResourceFileName(url);
+                itemValues.add(url + "==" + fileName);
+
+                page.addTargetPage(new Page(url,page).setIsResource(true));
+            }
+            PageItem itemFileMap = new PageItem(pageItem.getItemName()+"FileMap", PageItem.PageItemType.TEXT,true,true);
+            itemFileMap.setItemValue(itemValues);
+            putItem(page, itemFileMap);
+
+        }else{
+            String url = (String) urlObject;
+            String fileName = getResourceFileName(url);
+            PageItem itemFileMap = new PageItem(pageItem.getItemName()+"FileMap", PageItem.PageItemType.TEXT,true,false);
+            itemFileMap.setItemValue(url + "==" + fileName);
+            putItem(page,itemFileMap);
+
+            page.addTargetPage(new Page(url,page).setIsResource(true));
+        }
     }
 
     protected void putItem(Page page, PageItem item){

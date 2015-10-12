@@ -418,6 +418,7 @@ public class Page {
         json.append("<$skip>" + skip + "<$/skip>" );
         json.append("<$isRefresh>" + isRefresh + "<$/isRefresh>");
         json.append("<$isTest>" + isTest + "<$/isTest>");
+        json.append("<$isResource>" + isResource + "<$/isResource>");
         json.append(pageItems.toJson());
         json.append("<$/Page>");
         return json.toString();
@@ -432,6 +433,7 @@ public class Page {
         boolean skip = Boolean.parseBoolean(json.substring(json.indexOf("<$skip>") + 7, json.lastIndexOf("<$/skip>")));
         boolean isRefresh = Boolean.parseBoolean(json.substring(json.indexOf("<$isRefresh>")+12, json.lastIndexOf("<$/isRefresh>")));
         boolean isTest = Boolean.parseBoolean(json.substring(json.indexOf("<$isTest>")+9, json.lastIndexOf("<$/isTest>")));
+        boolean isResource = Boolean.parseBoolean(json.substring(json.indexOf("<$isResource>")+13, json.lastIndexOf("<$/isResource>")));
         String pageItemsString = json.substring(json.indexOf("<$PageItems>"), json.lastIndexOf("<$/PageItems>")+13);
 
         Page fatherPage = new Page(fatherPageUrl);
@@ -442,6 +444,7 @@ public class Page {
         page.setSkip(skip);
         page.setRefresh(isRefresh);
         page.setTest(isTest);
+        page.setIsResource(isResource);
         PageItems pageItems = PageItems.fromJson(pageItemsString,page);
         page.setPageItems(pageItems);
         return page;

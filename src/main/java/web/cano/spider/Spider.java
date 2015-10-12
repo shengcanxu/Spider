@@ -210,10 +210,11 @@ public class Spider implements Runnable, Task {
         if (downloader == null) {
             this.downloader = new HttpClientDownloader();
         }
-        pipelines.add(new AlignMultiVlauesPipeline());
-        pipelines.add(new CombineMultiPagesPipeline());
-        pipelines.add(new CombineSubPagesPipeline());
-        pipelines.add(new ConsolePipeline());
+
+        pipelines.add(0, new ConsolePipeline());
+        pipelines.add(0, new CombineSubPagesPipeline());
+        pipelines.add(0, new CombineMultiPagesPipeline());
+        pipelines.add(0, new AlignMultiVlauesPipeline());
 
         downloader.setThread(threadNum);
         if (threadPool == null || threadPool.isShutdown()) {

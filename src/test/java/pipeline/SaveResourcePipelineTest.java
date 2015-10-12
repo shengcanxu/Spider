@@ -1,5 +1,6 @@
 package pipeline;
 
+import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import web.cano.spider.Page;
 import web.cano.spider.Site;
@@ -56,9 +57,7 @@ public class SaveResourcePipelineTest extends DefaultPageProcessor implements Te
         assertThat(file.exists()).isEqualTo(true);
         assertThat(file.getUsableSpace()).isGreaterThan(100);
 
-        file.delete();
-        File folder= new File("f:/test/");
-        folder.delete();
+        FileUtils.forceDelete(new File("f:/test/"));
     }
 
     @Override

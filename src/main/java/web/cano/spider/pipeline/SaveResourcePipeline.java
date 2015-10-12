@@ -21,6 +21,7 @@ public class SaveResourcePipeline implements Pipeline {
 
     private boolean separateFolder = false;
 
+
     private SaveResourcePipeline() {
     }
 
@@ -34,23 +35,40 @@ public class SaveResourcePipeline implements Pipeline {
         }
     }
 
+    public SaveResourcePipeline setSeparateFolder(boolean separateFolder) {
+        this.separateFolder = separateFolder;
+        return this;
+    }
+
+    private String getResourceFileName(String url){
+        if(url.contains("?")){
+            url = url.substring(0,url.indexOf('?'));
+        }
+        int pos = url.lastIndexOf(".");
+        if(url.length() - pos >= 6){
+            return DigestUtils.md5Hex(url);
+        }else{
+            return DigestUtils.md5Hex(url) + url.substring(pos);
+        }
+    }
+
     @Override
-    public void process(Page page, Task task) {
+    public void process(Page page, Task task){
         if (!page.isResource()) return;
 
         byte[] bytes = page.getResourceBytes();
         String url = page.getUrl();
-        String fileName = DigestUtils.md5Hex(url) +  url.substring(url.lastIndexOf("."));
+        String fileName = getResourceFileName(url);
 
         String path;
         if(separateFolder){
-            path = filePath +  fileName;
-        }else{
-            String folderName = page.getUrl().replace(".", "").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
+            String folderName = page.getFatherPage().getUrl().replace(".", "").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
             if(folderName.length() >=300){
                 folderName = folderName.substring(folderName.length()-300,folderName.length());
             }
             path = filePath + folderName + "/" + fileName;
+        }else{
+            path = filePath +  fileName;
         }
 
         try {
