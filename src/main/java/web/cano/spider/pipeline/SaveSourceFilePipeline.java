@@ -6,9 +6,7 @@ import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
 import web.cano.spider.Task;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * 用于保存所爬取的程序的源文件
@@ -57,7 +55,9 @@ public class SaveSourceFilePipeline implements Pipeline {
             }
 
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
-            output.write(content.getBytes());
+            Writer writer = new OutputStreamWriter(output,"UTF-8");
+            writer.write(content);
+            writer.close();
             output.close();
 
         } catch (Exception e) {

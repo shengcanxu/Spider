@@ -80,9 +80,10 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             System.out.println("spider Name: " + args[1]);
         }
 
-        spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),false))
+        spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),true))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/sourcefile/"))
-                .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
+                //.addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
+                .addStartPage(new Page("http://www.douguo.com/caipu/禽类"))
                 .thread(threadNum).run();
     }
 }

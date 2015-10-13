@@ -96,7 +96,7 @@ public class HttpClientDownloader extends AbstractDownloader {
         File file = new File(localSitePath + fileName);
         if(file.exists()){
             try {
-                String content = FileUtils.readFileToString(file);
+                String content = FileUtils.readFileToString(file,"UTF-8");
                 request.getPage().setRawText(content);
                 logger.info("reparsing page: " + url);
                 return request.getPage();
