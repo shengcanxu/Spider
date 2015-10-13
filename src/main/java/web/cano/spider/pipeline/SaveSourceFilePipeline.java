@@ -41,7 +41,7 @@ public class SaveSourceFilePipeline implements Pipeline {
 
     @Override
     public void process(Page page, Task task) {
-        if (page.isResource() || task.getSite().isLocalSite()) return;
+        if (page.isResource()) return;
 
         String content = page.getRawText();
         String url = page.getUrl();
@@ -58,6 +58,7 @@ public class SaveSourceFilePipeline implements Pipeline {
 
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
             output.write(content.getBytes());
+            output.close();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

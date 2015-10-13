@@ -88,6 +88,7 @@ public class SaveResourcePipeline implements Pipeline {
 
             FileOutputStream output = FileUtils.openOutputStream(storeFile);
             output.write(bytes);
+            output.close();
 
         } catch (Exception e) {
             logger.error(e.getMessage(), e);

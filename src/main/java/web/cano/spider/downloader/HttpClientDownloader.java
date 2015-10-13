@@ -86,7 +86,7 @@ public class HttpClientDownloader extends AbstractDownloader {
         return request.getPage();
     }
 
-    private Page getLocalSitePage(Request request,String localSitePath){
+    private Page getLocalSitePage(Request request,String localSitePath,Task task){
         String url = request.getPage().getUrl();
         String fileName = url.replace(".","").replace("/","").replace(":","").replace("?","").replace("&","").replace("-", "");
         if(fileName.length() >=300){
@@ -98,6 +98,7 @@ public class HttpClientDownloader extends AbstractDownloader {
             try {
                 String content = FileUtils.readFileToString(file);
                 request.getPage().setRawText(content);
+                logger.info("reparsing page: " + url);
                 return request.getPage();
             } catch (IOException e) {
                 e.printStackTrace();
@@ -105,13 +106,15 @@ public class HttpClientDownloader extends AbstractDownloader {
             return null;
         }else{
             logger.warn("no such page for\t" + request.getPage().getUrl());
-            return null;
+
+            logger.info("re-downloading page: " + request.getPage().getUrl());
+            return getInternetPage(request,task);
         }
     }
 
     @Override
     public Page download(Request request, Task task) {
-        if(request.getPage().isTest()){
+        if (request.getPage().isTest()) {
             return getTestPage(request);
         }
 
@@ -119,13 +122,18 @@ public class HttpClientDownloader extends AbstractDownloader {
         if (task != null) {
             site = task.getSite();
         }
-        if(site.isLocalSite()){
-            return getLocalSitePage(request,site.getLocalSiteCopyLocation());
+        if (site.isLocalSite()) {
+            return getLocalSitePage(request, site.getLocalSiteCopyLocation(), task);
         }
 
+        return  getInternetPage(request,task);
+    }
+
+    public Page getInternetPage(Request request, Task task){
         Set<Integer> acceptStatCode;
         String charset = null;
         Map<String, String> headers = null;
+        Site site = task.getSite();
         if (site != null) {
             acceptStatCode = site.getAcceptStatCode();
             charset = site.getCharset();
@@ -133,7 +141,7 @@ public class HttpClientDownloader extends AbstractDownloader {
         } else {
             acceptStatCode = Sets.newHashSet(200);
         }
-        logger.info("downloading page {}", request.getUrl());
+        logger.info("downloading page: " + request.getUrl());
         CloseableHttpResponse httpResponse = null;
         int statusCode = 0;
         try {

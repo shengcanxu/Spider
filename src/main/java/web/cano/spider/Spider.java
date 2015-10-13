@@ -642,6 +642,11 @@ public class Spider implements Runnable, Task {
         return uuid;
     }
 
+    public Spider setUUID(String uuid){
+        this.uuid = uuid;
+        return this;
+    }
+
     public Spider setExecutorService(ExecutorService executorService) {
         checkIfRunning();
         this.executorService = executorService;

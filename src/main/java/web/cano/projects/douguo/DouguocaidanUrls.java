@@ -35,7 +35,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             .setDeepFirst(true)
             .setMaxDeep(2)
             .setSleepTime(3000)
-            .setLocalSiteCopyLocation("D:\\software\\redis\\data\\sourcefile\\")
+            //.setLocalSiteCopyLocation("D:\\software\\redis\\data\\sourcefile\\")
             .setUserAgent(
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
@@ -67,13 +67,19 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
 
     public static void main(String[] args) {
         int threadNum = 1;
-        if(args.length > 0){
+        if(args.length > 0 && args[0].length() > 0){
             threadNum = Integer.parseInt(args[0]);
         }
         System.out.println("thread NO.: " + threadNum);
 
         PageProcessor processor = new DouguocaidanUrls();
         Spider spider = Spider.create(processor);
+
+        if(args.length > 1 && args[1].length() > 0){
+            spider.setUUID(args[1]);
+            System.out.println("spider Name: " + args[1]);
+        }
+
         spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),false))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/sourcefile/"))
                 .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
