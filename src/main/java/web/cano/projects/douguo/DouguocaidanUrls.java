@@ -20,10 +20,12 @@ import java.io.IOException;
 
 public class DouguocaidanUrls extends DefaultPageProcessor {
     private FileOutputStream fos;
+    private FileOutputStream redisFos;
 
     public DouguocaidanUrls() {
         try {
             fos = new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true);
+            redisFos = new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredis.txt"),true);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,6 +60,8 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
                 try {
                     String c = page.getUrl() + "\n";
                     fos.write(c.getBytes());
+                    String d = page.toJson() + "\n";
+                    redisFos.write(d.getBytes());
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

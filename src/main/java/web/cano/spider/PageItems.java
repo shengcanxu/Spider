@@ -65,7 +65,7 @@ public class PageItems {
         json.append("<$PageItems> <$items>");
         for(PageItem item : items){
             json.append(item.toJson());
-            json.append("@#$");
+            json.append("<$br>");
         }
         json.append("<$/items><$/PageItems>");
 
@@ -75,9 +75,14 @@ public class PageItems {
     public static PageItems fromJson(String json, Page page){
         String items = json.substring(json.indexOf("<$items>")+8, json.lastIndexOf("<$/items>"));
         PageItems pageItems = new PageItems(page);
-        String[] itemList = items.split("@#$");
-        for(int i=0; i<itemList.length-1; i++){
+        if(items.trim().length() == 0){
+            return pageItems;
+        }
+
+        String[] itemList = items.split("<$br>");
+        for(int i=0; i<itemList.length; i++){
             PageItem item = PageItem.fromJson(itemList[i]);
+            pageItems.getItems().add(item);
         }
         return pageItems;
     }
