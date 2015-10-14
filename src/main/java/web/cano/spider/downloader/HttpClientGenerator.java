@@ -41,14 +41,14 @@ public class HttpClientGenerator {
         return this;
     }
 
-    public CloseableHttpClient getClient(Site site) {
-        return generateClient(site);
+    public CloseableHttpClient getClient(Site site , String userAgent) {
+        return generateClient(site,userAgent);
     }
 
-    private CloseableHttpClient generateClient(Site site) {
+    private CloseableHttpClient generateClient(Site site, String userAgent) {
         HttpClientBuilder httpClientBuilder = HttpClients.custom().setConnectionManager(connectionManager);
-        if (site != null && site.getUserAgent() != null) {
-            httpClientBuilder.setUserAgent(site.getUserAgent());
+        if (site != null) {
+            httpClientBuilder.setUserAgent(userAgent);
         } else {
             httpClientBuilder.setUserAgent("");
         }

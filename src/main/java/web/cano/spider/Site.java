@@ -22,7 +22,7 @@ public class Site {
 
     private String domain;
 
-    private String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
+    private List<String> userAgents = new ArrayList<String>();
 
     private Map<String, String> defaultCookies = new LinkedHashMap<String, String>();
 
@@ -131,8 +131,8 @@ public class Site {
      * @param userAgent userAgent
      * @return this
      */
-    public Site setUserAgent(String userAgent) {
-        this.userAgent = userAgent;
+    public Site addUserAgent(String userAgent) {
+        this.userAgents.add(userAgent);
         return this;
     }
 
@@ -160,7 +160,15 @@ public class Site {
      * @return user agent
      */
     public String getUserAgent() {
-        return userAgent;
+        if(this.userAgents.size() <= 1){
+            String userAgent = "Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/39.0.2171.95 Safari/537.36";
+            this.userAgents.add(userAgent);
+            return userAgent;
+        }else{
+            Random random = new Random();
+            int index = random.nextInt(this.userAgents.size());
+            return this.userAgents.get(index);
+        }
     }
 
     /**
@@ -300,7 +308,7 @@ public class Site {
 
     /**
      * Put an Http header for downloader. <br/>
-     * Use {@link #addCookie(String, String)} for cookie and {@link #setUserAgent(String)} for user-agent. <br/>
+     * Use {@link #addCookie(String, String)} for cookie and {@link #addUserAgent(String)} for user-agent. <br/>
      *
      * @param key   key of http header, there are some keys constant in {@link HeaderConst}
      * @param value value of header
@@ -405,7 +413,7 @@ public class Site {
         if (headers != null ? !headers.equals(site.headers) : site.headers != null) return false;
         if (startRequests != null ? !startRequests.equals(site.startRequests) : site.startRequests != null)
             return false;
-        if (userAgent != null ? !userAgent.equals(site.userAgent) : site.userAgent != null) return false;
+        if (userAgents.get(0) != null ? !userAgents.get(0).equals(site.userAgents.get(0)) : site.userAgents.get(0) != null) return false;
 
         return true;
     }
@@ -413,7 +421,7 @@ public class Site {
     @Override
     public int hashCode() {
         int result = domain != null ? domain.hashCode() : 0;
-        result = 31 * result + (userAgent != null ? userAgent.hashCode() : 0);
+        result = 31 * result + (userAgents.get(0) != null ? userAgents.get(0).hashCode() : 0);
         result = 31 * result + (defaultCookies != null ? defaultCookies.hashCode() : 0);
         result = 31 * result + (charset != null ? charset.hashCode() : 0);
         result = 31 * result + (startRequests != null ? startRequests.hashCode() : 0);
@@ -430,7 +438,7 @@ public class Site {
     public String toString() {
         return "Site{" +
                 "domain='" + domain + "\'\n" +
-                ", userAgent='" + userAgent + "\'\n" +
+                ", userAgent='" + userAgents.get(0) + "\'\n" +
                 ", cookies=" + defaultCookies + "\n" +
                 ", charset='" + charset + "\'\n" +
                 ", startPages=" + startRequests + "\n" +
