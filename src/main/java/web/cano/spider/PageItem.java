@@ -1,5 +1,8 @@
 package web.cano.spider;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * Created by cano on 2015/9/14.
  */
@@ -72,6 +75,16 @@ public class PageItem {
         json.append("<$itemType>" + itemType.toString() + "<$/itemType>");
         json.append("<$isNull>" + isNull + "<$/isNull>");
         json.append("<$isMultiple>" + isMultiple + "<$/isMultiple>") ;
+        if(isMultiple){
+            List<String> list = (List<String>) itemValue;
+            String value = list.get(0);
+            for(int i=1; i<list.size(); i++){
+                value = "@#$" + list.get(i);
+            }
+            json.append("<$itemValue>" + value + "<$/itemValue>");
+        }else{
+            json.append("<$itemValue>" + (String)itemValue + "<$/itemValue>");
+        }
         json.append("<$/PageItem>");
 
         return json.toString();
@@ -93,12 +106,20 @@ public class PageItem {
 
         boolean isNull = Boolean.parseBoolean(json.substring(json.indexOf("<$isNull>") + 9, json.lastIndexOf("<$/isNull>")));
         boolean isMultiple = Boolean.parseBoolean(json.substring(json.indexOf("<$isMultiple>") + 13, json.lastIndexOf("<$/isMultiple>")));
+        String itemValue = json.substring(json.indexOf("<$itemValue>") + 12, json.lastIndexOf("<$/itemValue>"));
 
         PageItem pageItem = new PageItem();
         pageItem.setItemName(itemName);
         pageItem.setItemType(itemType);
         pageItem.setIsNull(isNull);
         pageItem.setIsMultiple(isMultiple);
+        if(isMultiple){
+            String[] values = itemValue.split("@#$");
+            List<String> list = Arrays.asList(values);
+            pageItem.setItemValue(list);
+        }else{
+            pageItem.setItemValue(itemValue);
+        }
 
         return pageItem;
     }

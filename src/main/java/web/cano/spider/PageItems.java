@@ -26,13 +26,6 @@ public class PageItems {
         this.page = page;
     }
 
-    public PageItems clone(){
-        PageItems pageItems = new PageItems();
-        pageItems.setPage(page);
-        pageItems.getItems().addAll(items);
-        return pageItems;
-    }
-
     public List<PageItem> getItems() {
         return items;
     }
@@ -72,7 +65,7 @@ public class PageItems {
         json.append("<$PageItems> <$items>");
         for(PageItem item : items){
             json.append(item.toJson());
-            json.append("<$br>");
+            json.append("@#$");
         }
         json.append("<$/items><$/PageItems>");
 
@@ -82,7 +75,7 @@ public class PageItems {
     public static PageItems fromJson(String json, Page page){
         String items = json.substring(json.indexOf("<$items>")+8, json.lastIndexOf("<$/items>"));
         PageItems pageItems = new PageItems(page);
-        String[] itemList = items.split("<$br>");
+        String[] itemList = items.split("@#$");
         for(int i=0; i<itemList.length-1; i++){
             PageItem item = PageItem.fromJson(itemList[i]);
         }

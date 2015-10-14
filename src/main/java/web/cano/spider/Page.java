@@ -403,6 +403,7 @@ public class Page {
     }
 
     public void setPageItems(PageItems pageItems) {
+        pageItems.setPage(this);
         this.pageItems = pageItems;
     }
 

@@ -408,6 +408,11 @@ public class Spider implements Runnable, Task {
             for (Page p : pages) {
                 p.setDepth(page.getDepth()+1);
                 logger.info(p.getUrl());
+
+                //拷贝上一级page的内容
+                if(page.getPageItems().getItems().size() > 0){
+                    p.setPageItems(page.getPageItems());
+                }
             }
 
             List<Page> nextPages = page.getNextPages();

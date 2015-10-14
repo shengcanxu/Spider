@@ -1,6 +1,7 @@
 package web.cano.projects.douguo;
 
 import web.cano.spider.Page;
+import web.cano.spider.PageItem;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.SaveSourceFilePipeline;
@@ -35,7 +36,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             .setDeepFirst(true)
             .setMaxDeep(2)
             .setSleepTime(3000)
-            //.setLocalSiteCopyLocation("D:\\software\\redis\\data\\sourcefile\\")
+            .setLocalSiteCopyLocation("D:\\software\\redis\\data\\candanurlssourcefile\\")
             .setUserAgent(
                     "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
 
@@ -46,6 +47,10 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
                 parseUrls(page,"//div[@class=\"sortf\"]//ul/li/a/text()",PageProcessType.XPath);
                 break;
             case 1:
+                PageItem pageItem = new PageItem("fenlei", PageItem.PageItemType.STRING,true,false);
+                pageItem = extractBy(page,"//h1/text()",PageProcessType.XPath,pageItem);
+                putItem(page,pageItem);
+
                 parseUrls(page,"//*[@id=\"main\"]//h3/a/@href",PageProcessType.XPath);
                 parseNextUrls(page,"//div[@class=\"pagination\"]/span/a/@href",PageProcessType.XPath);
                 break;
@@ -81,9 +86,8 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
         }
 
         spider.setScheduler(new RedisScheduler("127.0.0.1",processor.getSite(),true))
-                .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/sourcefile/"))
-                //.addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
-                .addStartPage(new Page("http://www.douguo.com/caipu/禽类"))
+                .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/candanurlssourcefile/"))
+                .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
                 .thread(threadNum).run();
     }
 }
