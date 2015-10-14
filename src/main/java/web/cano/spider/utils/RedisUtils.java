@@ -5,10 +5,7 @@ import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
 import redis.clients.jedis.exceptions.JedisConnectionException;
 
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.util.List;
 import java.util.Set;
 
@@ -16,6 +13,60 @@ import java.util.Set;
  * Created by cano on 2015/10/9.
  */
 public class RedisUtils {
+
+    public static void fileToRedisList(String filePath, String listName){
+        Jedis jedis = null;
+        JedisPool pool;
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxActive(100);
+        config.setMaxIdle(20);
+        config.setMaxWait(10000l);
+        pool = new JedisPool(config, "127.0.0.1");
+
+        jedis = pool.getResource();
+        File storeFile = new File(filePath);
+        if(!storeFile.exists()){
+            System.out.println("file not exists");
+            return;
+        }
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(storeFile));
+            String str = br.readLine();
+            jedis.rpush(listName,str);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public static void fileToRedisSet(String filePath, String setName){
+        Jedis jedis = null;
+        JedisPool pool;
+        JedisPoolConfig config = new JedisPoolConfig();
+        config.setMaxActive(100);
+        config.setMaxIdle(20);
+        config.setMaxWait(10000l);
+        pool = new JedisPool(config, "127.0.0.1");
+
+        jedis = pool.getResource();
+        File storeFile = new File(filePath);
+        if(!storeFile.exists()){
+            System.out.println("file not exists");
+            return;
+        }
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(storeFile));
+            String str = br.readLine();
+            jedis.sadd(setName,str);
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public static void redisListToFile(String filePath, String listName){
         Jedis jedis = null;
