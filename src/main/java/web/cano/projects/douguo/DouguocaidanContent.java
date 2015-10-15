@@ -180,8 +180,9 @@ public class DouguocaidanContent extends DefaultPageProcessor {
             System.out.println("spider Name: " + args[1]);
         }
 
-        Spider.create(processor)
-                .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
+        spider.setUUID("douguo");
+
+        spider.setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), false))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/contentsourcefile/"))
                 .addPipeline(new SaveResourcePipeline("D:/software/redis/data/contentresource/").setSeparateFolder(true))
                 .addPipeline(new MysqlPipeline(true))

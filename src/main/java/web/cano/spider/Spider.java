@@ -410,7 +410,7 @@ public class Spider implements Runnable, Task {
                 logger.info(p.getUrl());
 
                 //拷贝上一级page的内容
-                if(!p.isSubPage() && !p.isSubMultiplePage() && page.getPageItems().getItems().size() > 0){
+                if(!p.isResource() && !p.isSubPage() && !p.isSubMultiplePage() && page.getPageItems().getItems().size() > 0){
                     p.setPageItems(page.getPageItems());
                 }
             }

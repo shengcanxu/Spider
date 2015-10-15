@@ -53,7 +53,9 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
     //下载资源文件并保存资源文件的连接
     protected  void downloadResources(Page page, PageItem pageItem){
         Object urlObject = pageItem.getItemValue();
-        if(urlObject instanceof List){
+        if(urlObject == null) {
+            return;
+        }if(urlObject instanceof List){
             List<String> urls = (List<String>) urlObject;
             List<String> itemValues = new ArrayList<String>();
             for(String url : urls){
@@ -100,7 +102,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
             String separator = this.getSite().getMultiValueSeparator();
             List<String> values = page.getHtml().selectDocumentForList(selector);
             if(values == null || values.size() ==0){
-                return null;
+                values = null;
             }
             item.setItemValue(values);
         }else{

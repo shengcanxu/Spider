@@ -75,7 +75,9 @@ public class PageItem {
         json.append("<$itemType>" + itemType.toString() + "<$/itemType>");
         json.append("<$isNull>" + isNull + "<$/isNull>");
         json.append("<$isMultiple>" + isMultiple + "<$/isMultiple>") ;
-        if(isMultiple){
+        if(itemValue == null) {
+            json.append("<$itemValue><$/itemValue>");
+        }else if(isMultiple){
             List<String> list = (List<String>) itemValue;
             String value = list.get(0);
             for(int i=1; i<list.size(); i++){
@@ -113,7 +115,9 @@ public class PageItem {
         pageItem.setItemType(itemType);
         pageItem.setIsNull(isNull);
         pageItem.setIsMultiple(isMultiple);
-        if(isMultiple){
+        if(itemValue.trim().length() == 0) {
+            pageItem.setItemValue(null);
+        }else if(isMultiple){
             String[] values = itemValue.split("@#$");
             List<String> list = Arrays.asList(values);
             pageItem.setItemValue(list);

@@ -9,9 +9,7 @@ import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 
 /**
  * Created by cano on 2015/5/28.
@@ -19,13 +17,13 @@ import java.io.IOException;
  */
 
 public class DouguocaidanUrls extends DefaultPageProcessor {
-    private FileOutputStream fos;
-    private FileOutputStream redisFos;
+    private Writer writer;
+    private Writer redisWriter;
 
     public DouguocaidanUrls() {
         try {
-            fos = new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true);
-            redisFos = new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredis.txt"),true);
+            writer = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true));
+            redisWriter = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredis.txt"),true));
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,9 +56,9 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             case 2:
                 try {
                     String c = page.getUrl() + "\n";
-                    fos.write(c.getBytes());
+                    writer.write(c);
                     String d = page.toJson() + "\n";
-                    redisFos.write(d.getBytes());
+                    redisWriter.write(d);
                 } catch (IOException e) {
                     e.printStackTrace();
                 }

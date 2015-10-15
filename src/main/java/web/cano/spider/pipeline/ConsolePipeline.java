@@ -49,13 +49,17 @@ public class ConsolePipeline implements Pipeline {
         for (PageItem item : pageItems.getItems()) {
             if(item.isMultiple()){
                 List<String> list = (List<String>) item.getItemValue();
-                sb.append(item.getItemName() + ":\t"  + list.get(0));
-                for(int i=1; i<list.size(); i++) {
-                    sb.append(separator + list.get(i));
+                if(list == null || list.size() == 0){
+                    sb.append("");
+                }else {
+                    sb.append(item.getItemName() + ":\t" + list.get(0));
+                    for (int i = 1; i < list.size(); i++) {
+                        sb.append(separator + list.get(i));
+                    }
                 }
                 sb.append("\n");
             }else {
-                sb.append(item.getItemName() + ":\t" + item.getItemValue().toString() + "\n");
+                sb.append(item.getItemName() + ":\t" + item.getItemValue() + "\n");
             }
         }
         logger.info(sb.toString());
