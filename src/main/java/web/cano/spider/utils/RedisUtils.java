@@ -32,7 +32,13 @@ public class RedisUtils {
         try {
             BufferedReader br = new BufferedReader(new FileReader(storeFile));
             String str = br.readLine();
-            jedis.rpush(listName,str);
+            int i=0;
+            while(str != null) {
+                jedis.rpush(listName, str);
+                i++;
+                System.out.println(i);
+                str = br.readLine();
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -59,7 +65,13 @@ public class RedisUtils {
         try {
             BufferedReader br = new BufferedReader(new FileReader(storeFile));
             String str = br.readLine();
-            jedis.sadd(setName,str);
+            int i=0;
+            while(str != null) {
+                jedis.sadd(setName, str);
+                i ++;
+                System.out.println(i);
+                str = br.readLine();
+            }
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();

@@ -173,12 +173,19 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         System.out.println("thread NO.: " + threadNum);
 
         PageProcessor processor = new DouguocaidanContent();
+        Spider spider = Spider.create(processor);
+
+        if(args.length > 1 && args[1].length() > 0){
+            spider.setUUID(args[1]);
+            System.out.println("spider Name: " + args[1]);
+        }
+
         Spider.create(processor)
                 .setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/contentsourcefile/"))
                 .addPipeline(new SaveResourcePipeline("D:/software/redis/data/contentresource/").setSeparateFolder(true))
                 .addPipeline(new MysqlPipeline(true))
-                .addStartPage(new Page("http://www.douguo.com/cookbook/1257340.html"))
+                //.addStartPage(new Page("http://www.douguo.com/cookbook/1257340.html"))
                 .thread(threadNum).run();
     }
 
