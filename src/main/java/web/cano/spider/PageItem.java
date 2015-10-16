@@ -7,7 +7,7 @@ import java.util.List;
  * Created by cano on 2015/9/14.
  */
 public class PageItem {
-    public static enum PageItemType {INT,STRING,TEXT,DATETIME}
+    public static enum PageItemType {INT,STRING,TEXT, DATE}
 
     private String itemName;
 
@@ -102,8 +102,8 @@ public class PageItem {
             itemType = PageItemType.STRING;
         }else if (typeString.equals("TEXT")){
             itemType = PageItemType.TEXT;
-        }else if(typeString.equals("DATETIME")){
-            itemType = PageItemType.DATETIME;
+        }else if(typeString.equals("DATE")){
+            itemType = PageItemType.DATE;
         }
 
         boolean isNull = Boolean.parseBoolean(json.substring(json.indexOf("<$isNull>") + 9, json.lastIndexOf("<$/isNull>")));

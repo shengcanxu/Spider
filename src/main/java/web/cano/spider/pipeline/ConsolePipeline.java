@@ -59,7 +59,8 @@ public class ConsolePipeline implements Pipeline {
                 }
                 sb.append("\n");
             }else {
-                sb.append(item.getItemName() + ":\t" + item.getItemValue() + "\n");
+                Object value = item.getItemValue() == null ? "" : item.getItemValue();
+                sb.append(item.getItemName() + ":\t" + value + "\n");
             }
         }
         logger.info(sb.toString());

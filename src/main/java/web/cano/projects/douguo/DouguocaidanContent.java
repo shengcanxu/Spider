@@ -49,15 +49,15 @@ public class DouguocaidanContent extends DefaultPageProcessor {
         title = extractBy(page, "//*[@id=\"page_cm_id\"]/text()", PageProcessType.XPath, title);
         putItem(page,title);
 
-        PageItem reads = new PageItem("reads", PageItem.PageItemType.STRING, true,false);
+        PageItem reads = new PageItem("reads", PageItem.PageItemType.INT, true,false);
         reads = extractBy(page, "//*[@id=\"main\"]//div[@class=\"falisc mbm mb40\"]/span[1]/text()", PageProcessType.XPath, reads);
         putItem(page,reads);
 
-        PageItem souchang = new PageItem("souchang", PageItem.PageItemType.STRING, true,false);
+        PageItem souchang = new PageItem("souchang", PageItem.PageItemType.INT, true,false);
         souchang = extractBy(page, "//*[@id=\"collectsnum\"]/text()", PageProcessType.XPath, souchang);
         putItem(page,souchang);
 
-        PageItem createDate = new PageItem("createDate", PageItem.PageItemType.STRING, true,false);
+        PageItem createDate = new PageItem("createDate", PageItem.PageItemType.DATE, true,false);
         createDate = extractBy(page, "//*[@id=\"main\"]//div[@class=\"falisc mbm mb40\"]/span[@class=\"fcc\"]/text()", PageProcessType.XPath, createDate);
         putItem(page,createDate);
 

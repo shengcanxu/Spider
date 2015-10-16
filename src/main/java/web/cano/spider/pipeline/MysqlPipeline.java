@@ -76,6 +76,24 @@ public class MysqlPipeline implements Pipeline {
         }
     }
 
+    private String itemValueMysqlString(PageItem.PageItemType type, Object value){
+        switch (type){
+            case INT:
+                int intValue = (Integer)value;
+                return ", " + value;
+            case TEXT:
+                String textValue = value == null ? "" : value.toString().trim().replace("'","\\'");
+                return ", '" + textValue + "'";
+            case DATE:
+                String dateValue = value == null ? "1000-01-01" : value.toString().trim();
+                return ", '" + dateValue + "'";
+            case STRING:
+                String strValue = value == null ? "" : value.toString().trim().replace("'", "\\'");
+                return ", '" + strValue + "'";
+        }
+        return "";
+    }
+
     private void insertRecordToDb(Page page, String tableName){
         String sql = "INSERT DELAYED INTO `" + tableName + "` (";
         String keys = "`id`";
@@ -83,7 +101,7 @@ public class MysqlPipeline implements Pipeline {
 
         for(PageItem item : page.getPageItems().getItems()){
             keys = keys + ", `" + item.getItemName() + "`";
-            values = values + ", '" + item.getItemValue() + "'";
+            values = values + itemValueMysqlString(item.getItemType(),item.getItemValue());
         }
         sql = sql + keys + ") VALUES (" + values + ");";
         logger.info(sql);
@@ -101,10 +119,10 @@ public class MysqlPipeline implements Pipeline {
                 if(item.isMultiple()){
                     List<String> list = (List<String>) item.getItemValue();
                     if(i==0) keys = keys + ", `" + item.getItemName() + "`";
-                    value = value + ", '" + list.get(i) + "'";
+                    value = value + itemValueMysqlString(item.getItemType(),list.get(i));
                 }else {
                     if(i==0) keys = keys + ", `" + item.getItemName() + "`";
-                    value = value + ", '" + item.getItemValue() + "'";
+                    value = value + itemValueMysqlString(item.getItemType(),item.getItemValue());
                 }
             }
             if(i==0) {
@@ -155,7 +173,7 @@ public class MysqlPipeline implements Pipeline {
                 case INT: {
                     return "int(11)";
                 }
-                case DATETIME:{
+                case DATE:{
                     return "datetime";
                 }
                 case TEXT:{
