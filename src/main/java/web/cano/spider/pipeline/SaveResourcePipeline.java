@@ -35,7 +35,7 @@ public class SaveResourcePipeline implements Pipeline {
         try {
             FileUtils.forceMkdir(new File(filePath));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("create directory error", e);
         }
     }
 

@@ -1,5 +1,7 @@
 package web.cano.projects.douguo;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
 import web.cano.spider.PageItem;
 import web.cano.spider.Site;
@@ -17,6 +19,8 @@ import java.io.*;
  */
 
 public class DouguocaidanUrls extends DefaultPageProcessor {
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     private Writer writer;
     private Writer redisWriter;
 
@@ -25,7 +29,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
             writer = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true));
             redisWriter = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredis.txt"),true));
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("get writer error", e);
         }
     }
 
@@ -60,7 +64,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
                     String d = page.toJson() + "\n";
                     redisWriter.write(d);
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("write to file error", e);
                 }
                 break;
         }

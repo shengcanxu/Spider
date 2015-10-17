@@ -18,7 +18,6 @@ public class DouguoHelper {
 //        FileHelper.writeUrlsToFile(diff[0],new File("D:\\software\\redis\\data\\diff1.txt"));
 //        FileHelper.writeUrlsToFile(diff[1],new File("D:\\software\\redis\\data\\diff2.txt"));
 
-        RedisUtils.fileToRedisList("D:\\software\\redis\\data\\douguourlsredis.txt","queue_douguo");
-
+        RedisUtils.fileToRedisList("D:\\software\\redis\\data\\douguourlsredis.txt", "queue_douguo");
     }
 }

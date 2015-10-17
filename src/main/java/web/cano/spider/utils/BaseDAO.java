@@ -4,6 +4,9 @@ package web.cano.spider.utils;
  * Created by cano on 2015/1/20.
  */
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -11,6 +14,9 @@ import java.util.List;
 import java.util.Map;
 
 public class BaseDAO {
+
+    private Logger logger = LoggerFactory.getLogger(getClass());
+
     private final static String DRIVER = "com.mysql.jdbc.Driver";
     private final static String URL = "jdbc:mysql://127.0.0.1:3306/";
     private final static String USERNAME = "root";
@@ -44,14 +50,12 @@ public class BaseDAO {
     private void getConn(String dbName) {
         try {
             Class.forName(DRIVER);
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        }
-        try {
             String connString = URL + dbName + "?characterEncoding=UTF-8";
             conn = DriverManager.getConnection(connString, USERNAME, PASSWORD);
-        } catch (SQLException e) {
-            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
+            logger.error("class not found", e);
+        }catch (SQLException e) {
+            logger.error("error creating connection", e);
         }
     }
 
@@ -60,7 +64,7 @@ public class BaseDAO {
             try {
                 conn.close();
             } catch (SQLException e) {
-                e.printStackTrace();
+                logger.error("connection close error", e);
             }
         }
     }
@@ -91,7 +95,7 @@ public class BaseDAO {
             rows = prsts.executeUpdate();
             prsts.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("exect sql '" + sql + "' error", e);
         }
 
         return rows;
@@ -138,7 +142,7 @@ public class BaseDAO {
             rs.close();
             prsts.close();
         } catch (SQLException e) {
-            e.printStackTrace();
+            logger.error("exect sql '" + sql + "' error", e);
         }
         return list;
     }

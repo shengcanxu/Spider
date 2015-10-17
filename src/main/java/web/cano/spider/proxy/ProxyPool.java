@@ -115,7 +115,7 @@ public class ProxyPool {
         } catch (FileNotFoundException e) {
             logger.error("proxy file not found", e);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("save proxy file error",e);
         }
     }
 

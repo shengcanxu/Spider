@@ -356,7 +356,7 @@ public class Spider implements Runnable, Task {
             try {
                 ((Closeable) object).close();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("destroy object error", e);
             }
         }
     }
@@ -397,7 +397,7 @@ public class Spider implements Runnable, Task {
         try {
             Thread.sleep(time);
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.error("", e);
         }
     }
 

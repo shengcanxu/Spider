@@ -78,7 +78,7 @@ public class HttpClientDownloader extends AbstractDownloader {
                 request.getPage().setRawText(content);
             }
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.error("get test page error", e);
         }
 
         request.getPage().setUrl(request.getPage().getUrl());
@@ -102,7 +102,7 @@ public class HttpClientDownloader extends AbstractDownloader {
                 logger.info("reparsing page: " + url);
                 return request.getPage();
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.error("read file error",e);
             }
             return null;
         }else{
