@@ -15,7 +15,6 @@ import web.cano.spider.scheduler.RedisScheduler;
 import web.cano.spider.selector.Html;
 import web.cano.spider.selector.XpathSelector;
 
-import java.io.PrintStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -31,7 +30,7 @@ public class DouguocaidanContent extends DefaultPageProcessor {
             .me()
             .setDomain("douguo.com")
             .addHeader("Referer", "http://www.douguo.com/")
-            .setDeepFirst(false)
+            .setDeepFirst(true)
             .setSleepTime(3000)
             //.setLocalSiteCopyLocation("D:\\software\\redis\\data\\contentsourcefile\\")
             .addUserAgent(
@@ -185,20 +184,13 @@ public class DouguocaidanContent extends DefaultPageProcessor {
             System.out.println("spider Name: " + args[1]);
         }
 
-        if(args.length > 2 && args[2].length() >0){
-            try {
-                System.setErr(new PrintStream(args[2]));
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
 
-        spider.setUUID("douguo");
+        spider.setUUID("douguocontent");
 
         spider.setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), false))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/contentsourcefile/"))
                 .addPipeline(new SaveResourcePipeline("D:/software/redis/data/contentresource/").setSeparateFolder(true))
-                .addPipeline(new MysqlPipeline(true))
+                .addPipeline(new MysqlPipeline(false))
                 //.addStartPage(new Page("http://www.douguo.com/cookbook/1257340.html"))
                 .thread(threadNum).run();
     }

@@ -20,7 +20,7 @@ public class RedisUtils {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxActive(100);
         config.setMaxIdle(20);
-        config.setMaxWait(10000l);
+        config.setMaxWait(20000l);
         pool = new JedisPool(config, "127.0.0.1");
 
         jedis = pool.getResource();
@@ -30,7 +30,8 @@ public class RedisUtils {
             return;
         }
         try {
-            BufferedReader br = new BufferedReader(new FileReader(storeFile));
+            FileInputStream fis = new FileInputStream(new File(filePath));
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
             String str = br.readLine();
             int i=0;
             while(str != null) {
@@ -39,6 +40,9 @@ public class RedisUtils {
                 System.out.println(i);
                 str = br.readLine();
             }
+
+            br.close();
+            fis.close();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -53,7 +57,7 @@ public class RedisUtils {
         JedisPoolConfig config = new JedisPoolConfig();
         config.setMaxActive(100);
         config.setMaxIdle(20);
-        config.setMaxWait(10000l);
+        config.setMaxWait(20000l);
         pool = new JedisPool(config, "127.0.0.1");
 
         jedis = pool.getResource();
@@ -63,7 +67,8 @@ public class RedisUtils {
             return;
         }
         try {
-            BufferedReader br = new BufferedReader(new FileReader(storeFile));
+            FileInputStream fis = new FileInputStream(new File(filePath));
+            BufferedReader br = new BufferedReader(new InputStreamReader(fis,"UTF-8"));
             String str = br.readLine();
             int i=0;
             while(str != null) {
@@ -72,6 +77,9 @@ public class RedisUtils {
                 System.out.println(i);
                 str = br.readLine();
             }
+
+            br.close();
+            fis.close();
 
         } catch (FileNotFoundException e) {
             e.printStackTrace();
@@ -98,16 +106,18 @@ public class RedisUtils {
                 System.out.println("file exists for " + filePath);
             }
             FileOutputStream output = new FileOutputStream(storeFile);
+            Writer writer = new OutputStreamWriter(output,"UTF-8");
 
             List<String> list = jedis.lrange((listName), 0, jedis.llen(listName));
             long len = list.size();
             for(int i=0; i<len; i++){
                 String s = list.get(i);
                 s = s + "\n";
-                output.write(s.getBytes());
+                writer.write(s);
                 System.out.println(i);
             }
 
+            writer.close();
             output.close();
             pool.returnResource(jedis);
 
@@ -139,17 +149,19 @@ public class RedisUtils {
                 System.out.println("file exists for " + filePath);
             }
             FileOutputStream output = new FileOutputStream(storeFile);
+            Writer writer = new OutputStreamWriter(output, "UTF-8");
 
             Set<String> urlset = jedis.smembers(setName);
             String[] urls = new String[urlset.size()];
             urlset.toArray(urls);
             for(int i=0; i<urls.length; i++){
                 String content = urls[i] + "\n";
-                output.write(content.getBytes());
+                writer.write(content);
 
                 System.out.println(i+1);
             }
 
+            writer.close();
             output.close();
             pool.returnResource(jedis);
 

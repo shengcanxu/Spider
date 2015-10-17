@@ -79,7 +79,7 @@ public class MysqlPipeline implements Pipeline {
     private String itemValueMysqlString(PageItem.PageItemType type, Object value){
         switch (type){
             case INT:
-                int intValue = (Integer)value;
+                int intValue = Integer.parseInt(value.toString().trim());
                 return ", " + value;
             case TEXT:
                 String textValue = value == null ? "" : value.toString().trim().replace("'","\\'");

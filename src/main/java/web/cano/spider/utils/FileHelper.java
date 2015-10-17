@@ -41,10 +41,12 @@ public class FileHelper {
     public static void writeUrlsToFile(List<String> urls, File file){
         try{
             FileOutputStream fos = new FileOutputStream(file);
+            Writer writer = new OutputStreamWriter(fos,"UTF-8");
             for(String url : urls){
                 url = url + "\n";
-                fos.write(url.getBytes());
+                writer.write(url);
             }
+            writer.close();
             fos.close();
         }catch (IOException e){
             e.printStackTrace();

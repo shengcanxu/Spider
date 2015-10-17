@@ -27,7 +27,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
     public DouguocaidanUrls() {
         try {
             writer = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourls.txt"),true));
-            redisWriter = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredis.txt"),true));
+            redisWriter = new OutputStreamWriter(new FileOutputStream(new File("D:\\software\\redis\\data\\douguourlsredisqueue.txt"),true));
         } catch (IOException e) {
             logger.error("get writer error", e);
         }
@@ -94,5 +94,7 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/candanurlssourcefile/"))
                 .addStartPage(new Page("http://www.douguo.com/caipu/fenlei"))
                 .thread(threadNum).run();
+
+
     }
 }
