@@ -2,7 +2,6 @@ package web.cano.spider.core;
 
 import org.junit.Test;
 import web.cano.spider.Page;
-import web.cano.spider.PageItems;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.TestCallabckPipeline;
@@ -60,11 +59,12 @@ public class MultiValueExtractTest extends DefaultPageProcessor implements Testa
 
         //做测试
         TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
+        Page page = testableProcessor.getPage();
+        List<PageItem> pageItems = page.getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(2);
-        List<String> titles = (List<String>) pageItems.getPageItemByName("title").getItemValue();
-        List<String> urls = (List<String>) pageItems.getPageItemByName("url").getItemValue();
+        assertThat(pageItems.size()).isEqualTo(2);
+        List<String> titles = (List<String>) page.getPageItemByName("title").getItemValue();
+        List<String> urls = (List<String>) page.getPageItemByName("url").getItemValue();
 
         assertThat(titles.size()).isEqualTo(50);
         assertThat(titles.get(0)).isEqualToIgnoringCase("zzSed学习笔记");

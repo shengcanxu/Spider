@@ -44,7 +44,7 @@ public class Page {
 
     private Request request;
 
-    private PageItems pageItems = new PageItems(this);
+    private List<PageItem> pageItems = new ArrayList<PageItem>();
 
     private Html html;
     private Json json;
@@ -270,10 +270,6 @@ public class Page {
         //this.pageItems.setRequest(request);
     }
 
-    public PageItems getPageItems() {
-        return pageItems;
-    }
-
     public int getStatusCode() {
         return statusCode;
     }
@@ -406,9 +402,13 @@ public class Page {
         return this;
     }
 
-    public void setPageItems(PageItems pageItems) {
-        pageItems.setPage(this);
+    public List<PageItem> getPageItems() {
+        return pageItems;
+    }
+
+    public Page setPageItems(List<PageItem> pageItems) {
         this.pageItems = pageItems;
+        return this;
     }
 
     public String toJson() {
@@ -425,9 +425,8 @@ public class Page {
         jsonObject.put("isResource", isResource);
 
         JSONArray jsonArray = new JSONArray();
-        List<PageItem> items = pageItems.getItems();
-        for (int i = 0; i < items.size(); i++) {
-            jsonArray.add(items.get(i));
+        for (int i = 0; i < pageItems.size(); i++) {
+            jsonArray.add(pageItems.get(i));
         }
         jsonObject.put("items", jsonArray);
 
@@ -454,11 +453,27 @@ public class Page {
             PageItem item = jsonArray.getObject(i,PageItem.class);
             list.add(item);
         }
-        PageItems pageItems = new PageItems(page);
-        pageItems.setItems(list);
-        page.setPageItems(pageItems);
+        page.setPageItems(list);
 
         return page;
+    }
+
+    public PageItem getPageItemByName(String name){
+        for(PageItem item : pageItems){
+            if(item.getItemName().equals(name)){
+                return item;
+            }
+        }
+        return null;
+    }
+
+    public Page setPageItemValue(String name, Object value){
+        for(PageItem item : pageItems){
+            if(item.getItemName().equals(name)){
+                item.setItemValue(value);
+            }
+        }
+        return this;
     }
 
 }

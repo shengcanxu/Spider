@@ -8,6 +8,7 @@ import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
 
 import java.io.File;
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -53,11 +54,12 @@ public class LocalSiteExtractTest extends DefaultPageProcessor implements Testab
 
         //做测试
         TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
+        Page page = testableProcessor.getPage();
+        List<PageItem> pageItems = page.getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(2);
-        assertThat(pageItems.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("宫保鸡丁");
-        assertThat(pageItems.getPageItemByName("pageUrl").getItemValue().toString()).isEqualToIgnoringCase("http://www.douguo.com/cookbook/1257340.html");
+        assertThat(pageItems.size()).isEqualTo(2);
+        assertThat(page.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("宫保鸡丁");
+        assertThat(page.getPageItemByName("pageUrl").getItemValue().toString()).isEqualToIgnoringCase("http://www.douguo.com/cookbook/1257340.html");
     }
 
     @Override

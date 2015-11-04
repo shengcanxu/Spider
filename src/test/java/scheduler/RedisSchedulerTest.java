@@ -2,7 +2,6 @@ package scheduler;
 
 import org.junit.Test;
 import web.cano.spider.Page;
-import web.cano.spider.PageItems;
 import web.cano.spider.Site;
 import web.cano.spider.Spider;
 import web.cano.spider.pipeline.TestCallabckPipeline;
@@ -11,6 +10,8 @@ import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.PageItem;
 import web.cano.spider.processor.TestableProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -64,12 +65,13 @@ public class RedisSchedulerTest extends DefaultPageProcessor implements Testable
 
         //做测试
         TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
+        Page page = testableProcessor.getPage();
+        List<PageItem> pageItems = page.getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(3);
-        assertThat(pageItems.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("编程为什么有趣？ 太有共鸣了");
-        assertThat(pageItems.getPageItemByName("tag").getItemValue().toString()).isEqualToIgnoringCase("it");
-        assertThat(pageItems.getPageItemByName("date").getItemValue().toString()).isEqualToIgnoringCase("2011-03-24 16:04:08");
+        assertThat(pageItems.size()).isEqualTo(3);
+        assertThat(page.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("编程为什么有趣？ 太有共鸣了");
+        assertThat(page.getPageItemByName("tag").getItemValue().toString()).isEqualToIgnoringCase("it");
+        assertThat(page.getPageItemByName("date").getItemValue().toString()).isEqualToIgnoringCase("2011-03-24 16:04:08");
     }
 
     @Override

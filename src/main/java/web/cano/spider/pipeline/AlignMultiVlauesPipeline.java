@@ -19,11 +19,11 @@ public class AlignMultiVlauesPipeline implements Pipeline {
 
         Spider spider = (Spider) task;
         if(!task.getSite().isShouldSplitToMultipleValues()) return;
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
 
         boolean isMultiple = false;
         int multiNumber = 1;
-        for(PageItem item : pageItems.getItems()){
+        for(PageItem item : pageItems){
             if(item.isMultiple()){
                 isMultiple = true;
                 List<String> list = (List<String>) item.getItemValue();
@@ -32,7 +32,7 @@ public class AlignMultiVlauesPipeline implements Pipeline {
         }
         if(!isMultiple) return;
 
-        for (PageItem item : pageItems.getItems()) {
+        for (PageItem item : pageItems) {
             if(item.isMultiple()){
                 List<String> list = (List<String>) item.getItemValue();
                 for(int i= list.size(); i<multiNumber; i++){

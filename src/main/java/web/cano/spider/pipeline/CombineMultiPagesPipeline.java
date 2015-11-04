@@ -5,7 +5,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
 import web.cano.spider.PageItem;
-import web.cano.spider.PageItems;
 import web.cano.spider.Task;
 
 import java.util.HashMap;
@@ -56,22 +55,22 @@ public class CombineMultiPagesPipeline implements Pipeline {
     }
 
     private void combineMultiplepages(Page[] pages,Page pageInPipeline){
-        PageItems pageItems = pages[0].getPageItems();
+        List<PageItem> pageItems = pages[0].getPageItems();
         String name = pageInPipeline.getMultiplePageItemName();
-        PageItem item = pageItems.getPageItemByName(name);
+        PageItem item = pages[0].getPageItemByName(name);
         if(item.getItemValue() instanceof List){
             List<String> list = (List<String>) item.getItemValue();
             for(int i=1; i<pages.length;i++){
-                List<String> l = (List<String>) pages[i].getPageItems().getPageItemByName(name).getItemValue();
+                List<String> l = (List<String>) pages[i].getPageItemByName(name).getItemValue();
                 list.addAll(l);
             }
-            pageItems.setPageItemValue(name, list);
+            pages[0].setPageItemValue(name, list);
         }else{
             String content = item.getItemValue().toString();
             for(int i=1; i<pages.length; i++){
-                content = content + pages[i].getPageItems().getPageItemByName(name).getItemValue();
+                content = content + pages[i].getPageItemByName(name).getItemValue();
             }
-            pageItems.setPageItemValue(name, content);
+            pages[0].setPageItemValue(name, content);
         }
 
         pageInPipeline.setPageItems(pageItems);

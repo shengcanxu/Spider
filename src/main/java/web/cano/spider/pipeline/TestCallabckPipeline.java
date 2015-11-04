@@ -3,13 +3,10 @@ package web.cano.spider.pipeline;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import web.cano.spider.Page;
-import web.cano.spider.PageItems;
 import web.cano.spider.Spider;
 import web.cano.spider.Task;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
-
-import java.util.Map;
 
 /**
  * 用户回调test processor，使得可以完成test cases

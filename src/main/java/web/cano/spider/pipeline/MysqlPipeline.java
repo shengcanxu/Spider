@@ -57,10 +57,10 @@ public class MysqlPipeline implements Pipeline {
 
         //insert to db
         Spider spider = (Spider) task;
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
         boolean isMultiple = false;
         int multiNumber = 1;
-        for(PageItem item : pageItems.getItems()){
+        for(PageItem item : pageItems){
             if(item.isMultiple()){
                 isMultiple = true;
                 List<String> list = (List<String>) item.getItemValue();
@@ -99,7 +99,7 @@ public class MysqlPipeline implements Pipeline {
         String keys = "`id`";
         String values = "NULL";
 
-        for(PageItem item : page.getPageItems().getItems()){
+        for(PageItem item : page.getPageItems()){
             keys = keys + ", `" + item.getItemName() + "`";
             values = values + itemValueMysqlString(item.getItemType(),item.getItemValue());
         }
@@ -109,13 +109,13 @@ public class MysqlPipeline implements Pipeline {
     }
 
     private void insertRecordsToDb(Page page, String tableName,int multiNumber){
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
 
         String keys = "`id`";
         String values = "";
         for(int i=0; i<multiNumber; i++) {
             String value = "NULL";
-            for (PageItem item : pageItems.getItems()) {
+            for (PageItem item : pageItems) {
                 if(item.isMultiple()){
                     List<String> list = (List<String>) item.getItemValue();
                     if(i==0) keys = keys + ", `" + item.getItemName() + "`";
@@ -153,8 +153,8 @@ public class MysqlPipeline implements Pipeline {
 
         logger.info("creating table " + tableName);
         String sql = "CREATE TABLE IF NOT EXISTS `" + tableName + "` (`id` int(11) NOT NULL AUTO_INCREMENT";
-        PageItems pageItems = page.getPageItems();
-        for (PageItem item : pageItems.getItems()) {
+        List<PageItem> pageItems = page.getPageItems();
+        for (PageItem item : pageItems) {
             sql = sql + ", `" + item.getItemName() + "` " + getItemTypeString(item.getItemType()) + " NULL";
         }
         sql = sql + ", PRIMARY KEY (`id`)) ENGINE=myisam;";

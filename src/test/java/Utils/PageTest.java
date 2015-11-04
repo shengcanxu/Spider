@@ -3,7 +3,6 @@ package Utils;
 import org.junit.Test;
 import web.cano.spider.Page;
 import web.cano.spider.PageItem;
-import web.cano.spider.PageItems;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,7 +17,6 @@ public class PageTest {
     @Test
     public void testPagetoJson(){
         Page page = new Page("http://www.baidu.com");
-        PageItems pageItems = new PageItems(page);
         List<PageItem> list = new ArrayList<PageItem>();
         PageItem item1 = new PageItem("test1", PageItem.PageItemType.STRING,false,false);
         item1.setItemValue("abc");
@@ -29,8 +27,7 @@ public class PageTest {
         PageItem item3 = new PageItem("test3", PageItem.PageItemType.STRING,false,false);
         item3.setItemValue(false);
         list.add(item3);
-        pageItems.setItems(list);
-        page.setPageItems(pageItems);
+        page.setPageItems(list);
 
         String json = page.toJson();
         System.out.println(json);
@@ -38,8 +35,8 @@ public class PageTest {
         Page newPage = Page.fromJson(json);
         assertThat(newPage.getUrl()).isEqualTo("http://www.baidu.com");
         assertThat(newPage.isTest()).isEqualTo(false);
-        assertThat(newPage.getPageItems().getItems().size()).isEqualTo(3);
-        List<PageItem>  items = newPage.getPageItems().getItems();
+        assertThat(newPage.getPageItems().size()).isEqualTo(3);
+        List<PageItem>  items = newPage.getPageItems();
         assertThat(items.get(0).getItemName()).isEqualTo("test1");
         assertThat(items.get(0).getItemValue()).isEqualTo("abc");
     }

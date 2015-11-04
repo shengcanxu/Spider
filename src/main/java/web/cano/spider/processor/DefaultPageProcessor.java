@@ -81,7 +81,7 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
 
     protected void putItem(Page page, PageItem item){
         if(item != null && page != null) {
-            page.getPageItems().getItems().add(item);
+            page.getPageItems().add(item);
         }
     }
 

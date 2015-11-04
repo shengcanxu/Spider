@@ -21,11 +21,11 @@ public class ConsolePipeline implements Pipeline {
         if (page.isSkip() || page.isResource()) return;
 
         Spider spider = (Spider) task;
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
 
         boolean isMultiple = false;
         int multiNumber = 1;
-        for(PageItem item : pageItems.getItems()){
+        for(PageItem item : pageItems){
             if(item.isMultiple()){
                 isMultiple = true;
                 List<String> list = (List<String>) item.getItemValue();
@@ -43,10 +43,10 @@ public class ConsolePipeline implements Pipeline {
     }
 
     private void printAsSingleRecord(Page page, String separator){
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
         StringBuilder sb = new StringBuilder();
-        sb.append("get page: " + pageItems.getPage().getUrl() + "\n");
-        for (PageItem item : pageItems.getItems()) {
+        sb.append("get page: " + page.getUrl() + "\n");
+        for (PageItem item : pageItems) {
             if(item.isMultiple()){
                 List<String> list = (List<String>) item.getItemValue();
                 if(list == null || list.size() == 0){
@@ -67,12 +67,12 @@ public class ConsolePipeline implements Pipeline {
     }
 
     private void printAsMultipleRecords(Page page,int multiNumber){
-        PageItems pageItems = page.getPageItems();
+        List<PageItem> pageItems = page.getPageItems();
 
         StringBuilder sb = new StringBuilder();
-        sb.append("get page: " + pageItems.getPage().getRequest().getUrl() + "\n");
+        sb.append("get page: " + page.getRequest().getUrl() + "\n");
         for(int i=0; i<multiNumber; i++) {
-            for (PageItem item : pageItems.getItems()) {
+            for (PageItem item : pageItems) {
                 if(item.isMultiple()){
                     List<String> list = (List<String>) item.getItemValue();
                     sb.append(item.getItemName() + ":\t" + list.get(i) + "\n");

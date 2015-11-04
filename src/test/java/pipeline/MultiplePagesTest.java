@@ -8,6 +8,8 @@ import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -66,10 +68,11 @@ public class MultiplePagesTest extends DefaultPageProcessor implements TestableP
 
         //做测试
         TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
+        Page page = testableProcessor.getPage();
+        List<PageItem> pageItems = page.getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(1);
-        assertThat(pageItems.getPageItemByName("content").getItemValue().toString().length()).isGreaterThan(7000);
+        assertThat(pageItems.size()).isEqualTo(1);
+        assertThat(page.getPageItemByName("content").getItemValue().toString().length()).isGreaterThan(7000);
     }
 
     @Override

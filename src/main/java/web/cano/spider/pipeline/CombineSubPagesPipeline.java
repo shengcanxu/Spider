@@ -56,9 +56,9 @@ public class CombineSubPagesPipeline implements Pipeline {
     private void combineSubpages(Page[] pages,Page pageInPipeline){
         List<PageItem> pageItemList = new ArrayList<PageItem>();
         for(Page page : pages){
-            pageItemList.addAll(page.getPageItems().getItems());
+            pageItemList.addAll(page.getPageItems());
         }
 
-        pageInPipeline.getPageItems().setItems(pageItemList);
+        pageInPipeline.setPageItems(pageItemList);
     }
 }

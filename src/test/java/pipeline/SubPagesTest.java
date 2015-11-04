@@ -8,6 +8,8 @@ import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.processor.TestableProcessor;
 
+import java.util.List;
+
 import static org.assertj.core.api.Assertions.assertThat;
 
 /**
@@ -61,11 +63,12 @@ public class SubPagesTest extends DefaultPageProcessor implements TestableProces
 
         //做测试
         TestableProcessor testableProcessor = (TestableProcessor) processor;
-        PageItems pageItems = testableProcessor.getPage().getPageItems();
+        Page page = testableProcessor.getPage();
+        List<PageItem> pageItems = page.getPageItems();
 
-        assertThat(pageItems.getItems().size()).isEqualTo(2);
-        assertThat(pageItems.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("玛格丽特的秘密：大鹏讲故事");
-        assertThat(pageItems.getPageItemByName("author").getItemValue().toString()).isEqualToIgnoringCase("大鹏讲故事");
+        assertThat(pageItems.size()).isEqualTo(2);
+        assertThat(page.getPageItemByName("title").getItemValue().toString()).isEqualToIgnoringCase("玛格丽特的秘密：大鹏讲故事");
+        assertThat(page.getPageItemByName("author").getItemValue().toString()).isEqualToIgnoringCase("大鹏讲故事");
     }
 
     @Override
