@@ -122,9 +122,8 @@ public class RedisScheduler extends DuplicateRemovedScheduler implements Monitor
                 return null;
             }
 
-            String url = json.substring(json.indexOf("<$url>")+6,json.lastIndexOf("<$/url>"));
-            jedis.hset(getMapKey(task),url,json);
             Page page = Page.fromJson(json);
+            jedis.hset(getMapKey(task),page.getUrl(),json);
             return page;
         }finally {
             pool.returnResource(jedis);

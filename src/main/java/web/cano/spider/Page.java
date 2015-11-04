@@ -1,11 +1,15 @@
 package web.cano.spider;
 
+import com.alibaba.fastjson.JSON;
+import com.alibaba.fastjson.JSONArray;
+import com.alibaba.fastjson.JSONObject;
 import org.apache.commons.lang3.StringUtils;
 import web.cano.spider.selector.Html;
 import web.cano.spider.selector.Json;
 import web.cano.spider.utils.UrlUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 /**
@@ -408,46 +412,53 @@ public class Page {
     }
 
     public String toJson() {
-        StringBuilder json = new StringBuilder();
-        json.append("<$Page>");
+        JSONObject jsonObject = new JSONObject();
         String fatherUrl = fatherPage == null ? "" : fatherPage.getUrl();
-        json.append("<$fatherPage>" + fatherUrl + "<$/fatherPage>");
-        json.append("<$url>" + this.url + "<$/url>");
-        json.append("<$statusCode>" + statusCode + "<$/statusCode>") ;
-        json.append("<$cycleTriedTimes>" + cycleTriedTimes + "<$/cycleTriedTimes>");
-        json.append("<$depth>" + depth + "<$/depth>");
-        json.append("<$skip>" + skip + "<$/skip>" );
-        json.append("<$isRefresh>" + isRefresh + "<$/isRefresh>");
-        json.append("<$isTest>" + isTest + "<$/isTest>");
-        json.append("<$isResource>" + isResource + "<$/isResource>");
-        json.append(pageItems.toJson());
-        json.append("<$/Page>");
-        return json.toString();
+        jsonObject.put("fatherPage", fatherUrl);
+        jsonObject.put("url", url);
+        jsonObject.put("statusCode", statusCode);
+        jsonObject.put("cycleTriedTimes", cycleTriedTimes);
+        jsonObject.put("depth", depth);
+        jsonObject.put("skip", skip);
+        jsonObject.put("isRefresh", isRefresh);
+        jsonObject.put("isTest", isTest);
+        jsonObject.put("isResource", isResource);
+
+        JSONArray jsonArray = new JSONArray();
+        List<PageItem> items = pageItems.getItems();
+        for (int i = 0; i < items.size(); i++) {
+            jsonArray.add(items.get(i));
+        }
+        jsonObject.put("items", jsonArray);
+
+        System.out.println(jsonObject.toJSONString());
+        return jsonObject.toJSONString();
     }
 
     public static Page fromJson(String json){
-        String fatherPageUrl = json.substring(json.indexOf("<$fatherPage>")+13, json.lastIndexOf("<$/fatherPage>"));
-        String url = json.substring(json.indexOf("<$url>")+6, json.lastIndexOf("<$/url>"));
-        int statusCode = Integer.parseInt(json.substring(json.indexOf("<$statusCode>") + 13, json.lastIndexOf("<$/statusCode>")));
-        int cycleTriedTimes = Integer.parseInt(json.substring(json.indexOf("<$cycleTriedTimes>") + 18, json.lastIndexOf("<$/cycleTriedTimes>")));
-        int depth = Integer.parseInt(json.substring(json.indexOf("<$depth>")+8, json.lastIndexOf("<$/depth>")));
-        boolean skip = Boolean.parseBoolean(json.substring(json.indexOf("<$skip>") + 7, json.lastIndexOf("<$/skip>")));
-        boolean isRefresh = Boolean.parseBoolean(json.substring(json.indexOf("<$isRefresh>")+12, json.lastIndexOf("<$/isRefresh>")));
-        boolean isTest = Boolean.parseBoolean(json.substring(json.indexOf("<$isTest>")+9, json.lastIndexOf("<$/isTest>")));
-        boolean isResource = Boolean.parseBoolean(json.substring(json.indexOf("<$isResource>")+13, json.lastIndexOf("<$/isResource>")));
-        String pageItemsString = json.substring(json.indexOf("<$PageItems>"), json.lastIndexOf("<$/PageItems>")+13);
+        JSONObject object = JSON.parseObject(json);
+        String fatherUrl = object.getString("fatherPage");
+        Page fatherPage = (fatherUrl == null || fatherUrl.trim().length() == 0) ? null : new Page(fatherUrl);
+        Page page = new Page(object.getString("url"),fatherPage);
+        page.setStatusCode(object.getInteger("statusCode"));
+        page.setCycleTriedTimes(object.getInteger("cycleTriedTimes"));
+        page.setDepth(object.getInteger("depth"));
+        page.setSkip(object.getBoolean("skip"));
+        page.setRefresh(object.getBoolean("isRefresh"));
+        page.setTest(object.getBoolean("isTest"));
+        page.setIsResource(object.getBoolean("isResource"));
 
-        Page fatherPage = new Page(fatherPageUrl);
-        Page page = new Page(url,fatherPage);
-        page.setStatusCode(statusCode);
-        page.setCycleTriedTimes(cycleTriedTimes);
-        page.setDepth(depth);
-        page.setSkip(skip);
-        page.setRefresh(isRefresh);
-        page.setTest(isTest);
-        page.setIsResource(isResource);
-        PageItems pageItems = PageItems.fromJson(pageItemsString,page);
+        JSONArray jsonArray = object.getJSONArray("items");
+        List<PageItem> list = new ArrayList<PageItem>();
+        for(int i=0; i<jsonArray.size();i++){
+            PageItem item = jsonArray.getObject(i,PageItem.class);
+            list.add(item);
+        }
+        PageItems pageItems = new PageItems(page);
+        pageItems.setItems(list);
         page.setPageItems(pageItems);
+
         return page;
     }
+
 }
