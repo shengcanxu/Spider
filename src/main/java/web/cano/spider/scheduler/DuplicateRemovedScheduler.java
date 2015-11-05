@@ -32,7 +32,7 @@ public abstract class DuplicateRemovedScheduler implements Scheduler {
     public void push(Page page, Task task) {
         logger.trace("get a candidate url {}", page.getUrl());
         if (!duplicatedRemover.isDuplicate(page, task) ) {
-            logger.debug("push to queue {}", page.getUrl());
+            logger.trace("push to queue {}", page.getUrl());
             pushWhenNoDuplicate(page, task);
         }
     }

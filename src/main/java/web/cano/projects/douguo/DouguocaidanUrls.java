@@ -61,8 +61,10 @@ public class DouguocaidanUrls extends DefaultPageProcessor {
                 try {
                     String c = page.getUrl() + "\n";
                     writer.write(c);
+                    writer.flush();
                     String d = page.toJson() + "\n";
                     redisWriter.write(d);
+                    redisWriter.flush();
                 } catch (IOException e) {
                     logger.error("write to file error", e);
                 }
