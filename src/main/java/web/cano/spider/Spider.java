@@ -383,7 +383,7 @@ public class Spider implements Runnable, Task {
             sleep(site.getSleepTime());
             return;
         }
-        pageProcessor.process(page);
+        if(!page.isResource()) pageProcessor.process(page);
         extractAndAddPages(page, spawnUrl);
         for (Pipeline pipeline : pipelines) {
             pipeline.process(page, this);
