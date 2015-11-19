@@ -458,13 +458,14 @@ public class Site {
      */
 	public Site setHttpProxyPool(List<String[]> httpProxyList) {
 		this.httpProxyPool=new ProxyPool(httpProxyList);
+        this.httpProxyPool.enable(true);
 		return this;
 	}
 
-    public Site enableHttpProxyPool() {
-        this.httpProxyPool=new ProxyPool();
-        return this;
-    }
+//    public Site enableHttpProxyPool() {
+//        this.httpProxyPool=new ProxyPool();
+//        return this;
+//    }
 
 	public ProxyPool getHttpProxyPool() {
 		return httpProxyPool;
