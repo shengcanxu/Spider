@@ -63,6 +63,7 @@ public class Site {
      */
     private String multiValueSeparator = "@#$";
 
+    //是否将多条记录分成多个记录存储
     private boolean shouldSplitToMultipleValues = false;
 
     private static final Set<Integer> DEFAULT_STATUS_CODE_SET = new HashSet<Integer>();

@@ -402,7 +402,7 @@ public class Spider implements Runnable, Task {
     }
 
     protected void extractAndAddPages(Page page, boolean spawnUrl) {
-        if (spawnUrl && CollectionUtils.isNotEmpty(page.getTargetPages())) {
+        if (spawnUrl && (CollectionUtils.isNotEmpty(page.getTargetPages()) || CollectionUtils.isNotEmpty(page.getNextPages())) ) {
             List<Page> pages = page.getTargetPages();
             logger.info("get " + pages.size() + " links to follow.");
             for (Page p : pages) {

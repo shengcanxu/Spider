@@ -21,9 +21,6 @@ public class MysqlPipeline implements Pipeline {
     //是否清空数据库
     private boolean shouldResetDb = false;
 
-    //是否将多条记录分成多个记录存储
-    private boolean shouldSplitMultiContent = false;
-
     private MysqlPipeline(){}
 
     public MysqlPipeline(boolean shouldResetDb){
@@ -32,7 +29,6 @@ public class MysqlPipeline implements Pipeline {
 
     public MysqlPipeline(boolean shouldResetDb,boolean shouldSplitMultiContent){
         this.shouldResetDb = shouldResetDb;
-        this.shouldSplitMultiContent = shouldSplitMultiContent;
     }
 
     @Override

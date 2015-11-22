@@ -34,7 +34,6 @@ public abstract class DefaultPageProcessor implements  PageProcessor{
         Selector selector = getSelector(pattern,type);
         List<String> urls = page.getHtml().selectDocumentForList(selector);
         page.addNextPages(urls);
-        page.setSkip(true);
         return urls.size();
     }
 
