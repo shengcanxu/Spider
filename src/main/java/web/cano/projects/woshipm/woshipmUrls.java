@@ -12,6 +12,7 @@ import web.cano.spider.pipeline.SaveSourceFilePipeline;
 import web.cano.spider.processor.DefaultPageProcessor;
 import web.cano.spider.processor.PageProcessor;
 import web.cano.spider.scheduler.RedisScheduler;
+import web.cano.spider.utils.ProxyList;
 
 import java.io.*;
 
@@ -34,8 +35,8 @@ public class woshipmUrls extends DefaultPageProcessor {
             .setSleepTime(3000)
             .setMaxDeep(1)
             //.setLocalSiteCopyLocation("D:\\software\\redis\\data\\woshipmcontentsourcefile\\")
-            .addUserAgent(
-                    "Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31");
+            .addUserAgent("Mozilla/5.0 (Macintosh; Intel Mac OS X 10_7_2) AppleWebKit/537.31 (KHTML, like Gecko) Chrome/26.0.1410.65 Safari/537.31")
+            .setHttpProxyPool(ProxyList.getProxyList());
 
     public woshipmUrls(){
         try {
@@ -73,7 +74,7 @@ public class woshipmUrls extends DefaultPageProcessor {
     }
 
     public static void main(String[] args) {
-        int threadNum = 20;
+        int threadNum = 1;
         if(args.length > 0){
             threadNum = Integer.parseInt(args[0]);
         }
@@ -87,11 +88,11 @@ public class woshipmUrls extends DefaultPageProcessor {
             System.out.println("spider Name: " + args[1]);
         }
 
-        spider.setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), false))
+        spider.setScheduler(new RedisScheduler("127.0.0.1", processor.getSite(), true))
                 .addPipeline(new SaveSourceFilePipeline("D:/software/redis/data/woshipmurlssourcefile/"));
 
         //2145
-        for(int i=1; i<2145; i++){
+        for(int i=1; i<10; i++){
             spider.addStartPage(new Page("http://www.woshipm.com/page/" + i + "?nocache"));
         }
         spider.thread(threadNum).run();

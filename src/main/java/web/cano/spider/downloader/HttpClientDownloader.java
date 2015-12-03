@@ -201,6 +201,7 @@ public class HttpClientDownloader extends AbstractDownloader {
                 .setCookieSpec(CookieSpecs.BEST_MATCH);
         if (site.getHttpProxyPool() != null && site.getHttpProxyPool().isEnable()) {
             HttpHost host = site.getHttpProxyFromPool();
+            logger.info("using proxy: " + host.getAddress().getHostAddress() + ":" + host.getPort());
 			requestConfigBuilder.setProxy(host);
             request.setProxy(host);
 		}

@@ -477,7 +477,9 @@ public class Site {
 	}
 
 	public void returnHttpProxyToPool(HttpHost proxy,int statusCode) {
-		httpProxyPool.returnProxy(proxy,statusCode);
+        if(proxy != null) {
+            httpProxyPool.returnProxy(proxy, statusCode);
+        }
 	}
 	
 	public Site setProxyReuseInterval(int reuseInterval) {
